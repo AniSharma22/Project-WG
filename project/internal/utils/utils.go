@@ -3,16 +3,16 @@ package utils
 import (
 	"fmt"
 	"project/internal/models"
+	"reflect"
 	"strings"
-	"sync"
 	"unicode"
 )
 
 var (
+	ProgressMap   = make(map[string][]int)
+	CourseOutline = make([]models.Course, 1)
 	UserMap       = make(map[string]string)
-	userMapMutex  sync.RWMutex
-	dataLoaded    bool
-	dataLoadedMu  sync.Mutex
+	DataLoaded    bool
 	NewEntryAdded bool = false
 )
 
@@ -48,26 +48,25 @@ func IsValidCountry(country string) bool {
 }
 
 func LoadUsers() {
-	userDataChan := make(chan models.UserData)
-	go Rfile(userDataChan)
+	userDataChan := make(chan any)
+	go RfileGeneral(userDataChan, "users.json", reflect.TypeOf(models.UserData{}))
 
 	for user := range userDataChan {
-		userMapMutex.Lock()
-		UserMap[user.Username] = user.Password
-		userMapMutex.Unlock()
-	}
+		// Type assertion
+		userData, ok := user.(*models.UserData)
+		if !ok {
+			fmt.Println("Error: received data is not of type models.UserData")
+			continue
+		}
 
-	// Mark data as loaded
-	userMapMutex.Lock()
-	dataLoaded = true
-	userMapMutex.Unlock()
+		UserMap[userData.Username] = userData.Password
+	}
+	DataLoaded = true
 }
 
 func EnsureDataLoaded() error {
-	dataLoadedMu.Lock()
-	defer dataLoadedMu.Unlock()
 
-	if !dataLoaded {
+	if !DataLoaded {
 		return fmt.Errorf("data not yet loaded")
 	}
 	return nil
@@ -75,14 +74,43 @@ func EnsureDataLoaded() error {
 
 // IsUsernameTaken checks if the username is taken, ensuring that data has been loaded.
 func IsUsernameTaken(username string) bool {
-	userMapMutex.RLock()
-	defer userMapMutex.RUnlock()
 
-	if !dataLoaded {
+	if !DataLoaded {
 		// Data not loaded, return false as we can't confirm the existence of the username
 		return false
 	}
 
 	_, userExists := UserMap[username]
 	return userExists
+}
+
+func LoadCourseOutline() {
+	courseDataChan := make(chan any)
+	go RfileGeneral(courseDataChan, "courses.json", reflect.TypeOf(models.Course{}))
+
+	for course := range courseDataChan {
+		courseData, ok := course.(*models.Course)
+		if !ok {
+			fmt.Println("Error: received data is not of type models.Course")
+		}
+		CourseOutline = append(CourseOutline, *courseData)
+
+	}
+
+}
+
+func LoadUserProgress() {
+	progressChan := make(chan any)
+
+	go RfileGeneral(progressChan, "progress.json", reflect.TypeOf(models.UserProgress{}))
+
+	for progress := range progressChan {
+		userProgress, ok := progress.(*models.UserProgress)
+		if !ok {
+			fmt.Println("Error: received data is not of type models.Course")
+		}
+		ProgressMap[userProgress.Username] = userProgress.CompletedModules
+
+	}
+
 }

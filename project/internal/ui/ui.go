@@ -19,6 +19,13 @@ func HandleUserAction(method string) {
 	}
 
 	if method == "signup" {
+		// Ensure data is loaded before proceeding
+		for {
+			err = utils.EnsureDataLoaded()
+			if err == nil {
+				break
+			}
+		}
 		// Check if the username is already taken
 		for utils.IsUsernameTaken(username) {
 			fmt.Println("Username already taken!!")
@@ -32,12 +39,15 @@ func HandleUserAction(method string) {
 	}
 
 	// Read the password
+	fmt.Println("(1 Capital, 1 small, 1 special charcter with min 8 length)")
 	fmt.Print("Enter password: ")
 	_, err = fmt.Scanln(&password)
 	if err != nil {
 		fmt.Println("Error reading password:", err)
 		return
 	}
+
+	fmt.Println("Password entered.") // Debug print
 
 	if method == "signup" && !utils.IsValidPassword(password) {
 		// Prompt for a valid password if the provided one is not strong enough
@@ -66,6 +76,7 @@ func HandleUserAction(method string) {
 			fmt.Println("Error reading country:", err)
 			return
 		}
+		fmt.Println("Country entered:", country) // Debug print
 		if !utils.IsValidCountry(country) {
 			fmt.Println("Users from this country are not allowed!!")
 			return
