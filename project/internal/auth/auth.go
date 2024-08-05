@@ -13,20 +13,20 @@ func Signup(username, password string) {
 	utils.NewEntryAdded = true
 	utils.ProgressMap[username] = []int{}
 	fmt.Println("Signup successful!")
-	forward(username)
-
+	HandleUserDashboard(username)
 }
 
 func Login(username, password string) {
 	if utils.IsUsernameTaken(username) && utils.UserMap[username] == password {
 		fmt.Println("Login successful!")
-		forward(username)
+		HandleUserDashboard(username)
 		return
 	}
 	fmt.Println("Username or Password is wrong!!")
 	return
 }
-func forward(username string) {
+
+func HandleUserDashboard(username string) {
 	for {
 		// Ensure CourseOutline is loaded
 		if len(utils.CourseOutline) == 0 {

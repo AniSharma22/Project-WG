@@ -1,22 +1,27 @@
 package ui
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"project/internal/auth"
 	"project/internal/utils"
+	"strings"
 )
 
 // HandleUserAction processes user actions for signup and login.
 func HandleUserAction(method string) {
+	reader := bufio.NewReader(os.Stdin)
 	var username, password, country string
 
 	// Read the username
 	fmt.Print("Enter username: ")
-	_, err := fmt.Scanln(&username)
+	username, err := reader.ReadString('\n')
 	if err != nil {
 		fmt.Println("Error reading username:", err)
 		return
 	}
+	username = strings.TrimSpace(username) // Trim any extra spaces or newlines
 
 	if method == "signup" {
 		// Ensure data is loaded before proceeding
@@ -30,35 +35,35 @@ func HandleUserAction(method string) {
 		for utils.IsUsernameTaken(username) {
 			fmt.Println("Username already taken!!")
 			fmt.Print("Enter a new Username: ")
-			_, err = fmt.Scanln(&username)
+			username, err = reader.ReadString('\n')
 			if err != nil {
 				fmt.Println("Error reading username:", err)
 				return
 			}
+			username = strings.TrimSpace(username) // Trim any extra spaces or newlines
 		}
 	}
 
 	// Read the password
-	fmt.Println("(1 Capital, 1 small, 1 special charcter with min 8 length)")
+	fmt.Println("(1 Capital, 1 small, 1 special character with min 8 length)")
 	fmt.Print("Enter password: ")
-	_, err = fmt.Scanln(&password)
+	password, err = reader.ReadString('\n')
 	if err != nil {
 		fmt.Println("Error reading password:", err)
 		return
 	}
-
-	fmt.Println("Password entered.") // Debug print
+	password = strings.TrimSpace(password) // Trim any extra spaces or newlines
 
 	if method == "signup" && !utils.IsValidPassword(password) {
 		// Prompt for a valid password if the provided one is not strong enough
 		for {
 			fmt.Println("Enter a stronger password!")
-			var tempPass string
-			_, err = fmt.Scanln(&tempPass)
+			tempPass, err := reader.ReadString('\n')
 			if err != nil {
 				fmt.Println("Error reading password:", err)
 				continue
 			}
+			tempPass = strings.TrimSpace(tempPass) // Trim any extra spaces or newlines
 			if utils.IsValidPassword(tempPass) {
 				password = tempPass
 				break
@@ -71,12 +76,12 @@ func HandleUserAction(method string) {
 	if method == "signup" {
 		// Read the country
 		fmt.Print("Enter country: ")
-		_, err = fmt.Scanln(&country)
+		country, err = reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("Error reading country:", err)
 			return
 		}
-		fmt.Println("Country entered:", country) // Debug print
+		country = strings.TrimSpace(country) // Trim any extra spaces or newlines
 		if !utils.IsValidCountry(country) {
 			fmt.Println("Users from this country are not allowed!!")
 			return
