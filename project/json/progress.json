@@ -1,0 +1,110 @@
+[
+  {
+    "username": "rahul",
+    "progress": [
+      {
+        "courseID": 1,
+        "completedSections": [
+          1.9,
+          1.3,
+          2.9,
+          2.7
+        ]
+      }
+    ]
+  },
+  {
+    "username": "virat",
+    "progress": [
+      {
+        "courseID": 1,
+        "completedSections": []
+      }
+    ]
+  },
+  {
+    "username": "pravin",
+    "progress": [
+      {
+        "courseID": 1,
+        "completedSections": [
+          1.9
+        ]
+      }
+    ]
+  },
+  {
+    "username": "aarushi",
+    "progress": [
+      {
+        "courseID": 1,
+        "completedSections": [
+          1.1
+        ]
+      },
+      {
+        "courseID": 4,
+        "completedSections": []
+      }
+    ]
+  },
+  {
+    "username": "ketan",
+    "progress": [
+      {
+        "courseID": 1,
+        "completedSections": [
+          1.1,
+          1.5,
+          1.6
+        ]
+      },
+      {
+        "courseID": 3,
+        "completedSections": [
+          3.1,
+          3.2,
+          3.7
+        ]
+      }
+    ]
+  },
+  {
+    "username": "random",
+    "progress": [
+      {
+        "courseID": 1,
+        "completedSections": [
+          1.1,
+          1.2
+        ]
+      }
+    ]
+  },
+  {
+    "username": "anshi",
+    "progress": [
+      {
+        "courseID": 1,
+        "completedSections": [
+          1.1,
+          1.5,
+          1.6
+        ]
+      },
+      {
+        "courseID": 3,
+        "completedSections": [
+          3.1,
+          3.2,
+          3.7,
+          3.9
+        ]
+      },
+      {
+        "courseID": 6,
+        "completedSections": []
+      }
+    ]
+  }
+]

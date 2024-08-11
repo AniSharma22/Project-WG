@@ -1,0 +1,15 @@
+[
+  {
+    "username": "test user",
+    "details": {
+      "todo_list": ["test todo"],
+      "daily_status": [
+        {
+          "time": "test time",
+          "date": "test date",
+          "task": "test task"
+        }
+      ]
+    }
+  }
+]

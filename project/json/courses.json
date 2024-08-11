@@ -1,0 +1,266 @@
+[
+  {
+    "id": 1,
+    "details": {
+      "title": "Sample Course",
+      "modules": [
+        {
+          "id": 1.1,
+          "title": "Module 1: Introduction to the Course"
+        },
+        {
+          "id": 1.2,
+          "title": "Module 2: Basics"
+        },
+        {
+          "id": 1.3,
+          "title": "Module 3: Intermediate Concepts"
+        },
+        {
+          "id": 1.4,
+          "title": "Module 4: Advanced Topics"
+        },
+        {
+          "id": 1.5,
+          "title": "Module 5: Expert Techniques"
+        },
+        {
+          "id": 1.6,
+          "title": "Module 6: Practical Applications"
+        },
+        {
+          "id": 1.7,
+          "title": "Module 7: Case Studies"
+        },
+        {
+          "id": 1.8,
+          "title": "Module 8: Future Trends"
+        },
+        {
+          "id": 1.9,
+          "title": "Module 9: Final Project"
+        }
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "details": {
+      "title": "Golang Course",
+      "modules": [
+        {
+          "id": 2.1,
+          "title": "Module 1: Introduction to Go"
+        },
+        {
+          "id": 2.2,
+          "title": "Module 2: Go Basics"
+        },
+        {
+          "id": 2.3,
+          "title": "Module 3: Go Data Structures"
+        },
+        {
+          "id": 2.4,
+          "title": "Module 4: Concurrency in Go"
+        },
+        {
+          "id": 2.5,
+          "title": "Module 5: Go Packages and Modules"
+        },
+        {
+          "id": 2.6,
+          "title": "Module 6: Go Web Development"
+        },
+        {
+          "id": 2.7,
+          "title": "Module 7: Go Testing"
+        },
+        {
+          "id": 2.8,
+          "title": "Module 8: Advanced Go Patterns"
+        },
+        {
+          "id": 2.9,
+          "title": "Module 9: Building CLI Tools in Go"
+        }
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "details": {
+      "title": "Python Course",
+      "modules": [
+        {
+          "id": 3.1,
+          "title": "Module 1: Introduction to Python"
+        },
+        {
+          "id": 3.2,
+          "title": "Module 2: Python Basics"
+        },
+        {
+          "id": 3.3,
+          "title": "Module 3: Python Data Structures"
+        },
+        {
+          "id": 3.4,
+          "title": "Module 4: Python Object-Oriented Programming"
+        },
+        {
+          "id": 3.5,
+          "title": "Module 5: Python for Web Development"
+        },
+        {
+          "id": 3.6,
+          "title": "Module 6: Python for Data Science"
+        },
+        {
+          "id": 3.7,
+          "title": "Module 7: Python for Automation"
+        },
+        {
+          "id": 3.8,
+          "title": "Module 8: Advanced Python"
+        },
+        {
+          "id": 3.9,
+          "title": "Module 9: Python Testing"
+        }
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "details": {
+      "title": "AWS Course",
+      "modules": [
+        {
+          "id": 4.1,
+          "title": "Module 1: Introduction to AWS"
+        },
+        {
+          "id": 4.2,
+          "title": "Module 2: AWS Compute Services"
+        },
+        {
+          "id": 4.3,
+          "title": "Module 3: AWS Storage Services"
+        },
+        {
+          "id": 4.4,
+          "title": "Module 4: AWS Networking"
+        },
+        {
+          "id": 4.5,
+          "title": "Module 5: AWS Security"
+        },
+        {
+          "id": 4.6,
+          "title": "Module 6: AWS Databases"
+        },
+        {
+          "id": 4.7,
+          "title": "Module 7: AWS Monitoring and Management"
+        },
+        {
+          "id": 4.8,
+          "title": "Module 8: AWS DevOps"
+        },
+        {
+          "id": 4.9,
+          "title": "Module 9: AWS Machine Learning"
+        }
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "details": {
+      "title": "React Course",
+      "modules": [
+        {
+          "id": 5.1,
+          "title": "Module 1: Introduction to React"
+        },
+        {
+          "id": 5.2,
+          "title": "Module 2: React Basics"
+        },
+        {
+          "id": 5.3,
+          "title": "Module 3: React State and Props"
+        },
+        {
+          "id": 5.4,
+          "title": "Module 4: React Component Lifecycle"
+        },
+        {
+          "id": 5.5,
+          "title": "Module 5: React Hooks"
+        },
+        {
+          "id": 5.6,
+          "title": "Module 6: React Context API"
+        },
+        {
+          "id": 5.7,
+          "title": "Module 7: React Router"
+        },
+        {
+          "id": 5.8,
+          "title": "Module 8: React Redux"
+        },
+        {
+          "id": 5.9,
+          "title": "Module 9: React Testing"
+        }
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "details": {
+      "title": "Angular Course",
+      "modules": [
+        {
+          "id": 6.1,
+          "title": "Module 1: Introduction to Angular"
+        },
+        {
+          "id": 6.2,
+          "title": "Module 2: Angular Basics"
+        },
+        {
+          "id": 6.3,
+          "title": "Module 3: Angular Components"
+        },
+        {
+          "id": 6.4,
+          "title": "Module 4: Angular Services"
+        },
+        {
+          "id": 6.5,
+          "title": "Module 5: Angular Routing"
+        },
+        {
+          "id": 6.6,
+          "title": "Module 6: Angular Forms"
+        },
+        {
+          "id": 6.7,
+          "title": "Module 7: Angular HTTP Client"
+        },
+        {
+          "id": 6.8,
+          "title": "Module 8: Angular Testing"
+        },
+        {
+          "id": 6.9,
+          "title": "Module 9: Angular and RxJS"
+        }
+      ]
+    }
+  }
+]

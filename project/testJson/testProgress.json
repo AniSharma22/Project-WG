@@ -1,0 +1,14 @@
+[
+  {
+    "username": "test user",
+    "progress": [
+      {
+        "courseID": 1,
+        "completedSections": [
+          1.1,
+          1.2
+        ]
+      }
+    ]
+  }
+]

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"project/internal/auth"
 	"project/internal/utils"
 	"strings"
 )
@@ -45,7 +44,9 @@ func HandleUserAction(method string) {
 	}
 
 	// Read the password
-	fmt.Println("(1 Capital, 1 small, 1 special character with min 8 length)")
+	if method == "signup" {
+		fmt.Println("(1 Capital, 1 small, 1 special character with min 8 length)")
+	}
 	fmt.Print("Enter password: ")
 	password, err = reader.ReadString('\n')
 	if err != nil {
@@ -91,9 +92,9 @@ func HandleUserAction(method string) {
 	// Handle the action based on the method
 	switch method {
 	case "login":
-		auth.Login(username, password)
+		Login(username, password)
 	case "signup":
-		auth.Signup(username, password)
+		Signup(username, password)
 	default:
 		fmt.Println("Invalid method. Please use 'login' or 'signup'.")
 	}

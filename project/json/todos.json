@@ -1,0 +1,139 @@
+[
+  {
+    "username": "pravin",
+    "details": {
+      "todo_list": [],
+      "daily_status": [
+        {
+          "time": "10:50:24",
+          "date": "2024-08-07",
+          "task": "Module 9: Final Project"
+        },
+        {
+          "time": "10:51:20",
+          "date": "2024-08-07",
+          "task": "gym"
+        }
+      ]
+    }
+  },
+  {
+    "username": "random",
+    "details": {
+      "todo_list": [
+        "sleep"
+      ],
+      "daily_status": [
+        {
+          "time": "07:08:11",
+          "date": "2024-08-07",
+          "task": "gym"
+        },
+        {
+          "time": "07:20:42",
+          "date": "2024-08-07",
+          "task": "Module 1: Introduction to the Course"
+        },
+        {
+          "time": "07:20:53",
+          "date": "2024-08-07",
+          "task": "Module 2: Basics"
+        }
+      ]
+    }
+  },
+  {
+    "username": "ketan",
+    "details": {
+      "todo_list": [
+        "Complete Go project",
+        "Complete Go project"
+      ],
+      "daily_status": [
+        {
+          "time": "09:00",
+          "date": "2024-08-03",
+          "task": "Morning exercise"
+        },
+        {
+          "time": "10:00",
+          "date": "2024-08-03",
+          "task": "Team meeting"
+        },
+        {
+          "time": "02:23:12",
+          "date": "2024-08-06",
+          "task": "Buy groceries"
+        }
+      ]
+    }
+  },
+  {
+    "username": "anshi",
+    "details": {
+      "todo_list": [
+        "Prepare dinner"
+      ],
+      "daily_status": [
+        {
+          "time": "08:00",
+          "date": "2024-08-03",
+          "task": "Yoga session"
+        },
+        {
+          "time": "11:00",
+          "date": "2024-08-03",
+          "task": "Client call"
+        },
+        {
+          "time": "15:15:22",
+          "date": "2024-08-06",
+          "task": "Read a book"
+        },
+        {
+          "time": "21:20:06",
+          "date": "2024-08-06",
+          "task": "Module 9: Python Testing"
+        }
+      ]
+    }
+  },
+  {
+    "username": "rahul",
+    "details": {
+      "todo_list": [],
+      "daily_status": [
+        {
+          "time": "20:18:35",
+          "date": "2024-08-06",
+          "task": "gym"
+        }
+      ]
+    }
+  },
+  {
+    "username": "virat",
+    "details": {
+      "todo_list": [],
+      "daily_status": []
+    }
+  },
+  {
+    "username": "aarushi",
+    "details": {
+      "todo_list": [],
+      "daily_status": [
+        {
+          "time": "12:50:59",
+          "date": "2024-08-07",
+          "task": "Module 1: Introduction to the Course"
+        },
+        {
+          "time": "12:54:34",
+          "date": "2024-08-07",
+          "task": "sleep"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "username": "virat",
+    "password": "$2a$14$sShqjMRCGoGdjtoeylWEH.T9cL2ClaLfsHBMk8cmefT1oinjtgjZm"
+  },
+  {
+    "username": "random",
+    "password": "$2a$14$4x1jcTFvthCTrTlk3/uUMuvVUtuz0LvwsZra9XzuLIA9.Zdw7OKSq"
+  },
+  {
+    "username": "pravin",
+    "password": "$2a$14$OVfJuKD82zSPSdMSIKFvxO5UrApzFjHzp/chqckphEB9HXV8f/AZy"
+  },
+  {
+    "username": "aryan",
+    "password": "$2a$14$oU0stiVAkP2pyGytFayS8OPmp1LUyRTbdtC0RWm585qUeMEtM8QcG"
+  },
+  {
+    "username": "anshi",
+    "password": "$2a$14$8Cr16VAzaKaWEK/b0X7zS.gi5Plln7f44.ojY5UrBHLEb1qg6LxCW"
+  },
+  {
+    "username": "rahul",
+    "password": "$2a$14$Q/SlZkT9ArIYz.FLT35h8ujZ1Z7SixaAFjA.w/PHroWBiuzJPQuAe"
+  },
+  {
+    "username": "anish",
+    "password": "$2a$14$ijtxJrw74d5JwAn0cHt.GO9HJ/Dht74qai7McWW8sZvU0gGHLgK8."
+  },
+  {
+    "username": "aarushi",
+    "password": "$2a$14$U6GS/wivbXH4ledOMfmkb.jfcoaYkk1qDWEnJbRenD2NdaLgxUMoy"
+  },
+  {
+    "username": "ketan",
+    "password": "$2a$14$obEzVLWcGVBqh0Obc7MGDeRvz7qGdFLJ9dxfGK1T1pzIKm0lsWgSi"
+  }
+]

@@ -5,51 +5,40 @@ import (
 	"project/internal/models"
 	"reflect"
 	"strings"
-	"unicode"
 )
 
 var (
-	ProgressMap   = make(map[string][]int)
-	CourseOutline = make([]models.Course, 1)
-	UserMap       = make(map[string]string)
-	DataLoaded    bool
-	NewEntryAdded bool = false
+	TodosMap         = make(map[string]models.UserDetails)
+	ProgressMap      = make(map[string][]models.CompletedSection)
+	CourseOutlineMap = make(map[int]models.CourseDetails)
+	UserMap          = make(map[string]string)
+	UserDataLoaded   bool
 )
-
-func IsValidPassword(password string) bool {
-	var hasUpper, hasLower, hasSpecial bool
-
-	if len(password) < 8 {
-		return false
-	}
-
-	for _, char := range password {
-		switch {
-		case unicode.IsUpper(char):
-			hasUpper = true
-		case unicode.IsLower(char):
-			hasLower = true
-		case unicode.IsPunct(char) || unicode.IsSymbol(char):
-			hasSpecial = true
-		}
-	}
-
-	return hasUpper && hasLower && hasSpecial
-}
 
 func IsValidCountry(country string) bool {
 	country = strings.ToLower(country)
 	if country == "pakistan" || country == "china" {
-		fmt.Println("Users from this country are not allowed!!")
 		return false
 	}
 
 	return true
 }
 
-func LoadUsers() {
+// IsUsernameTaken checks if the username is taken, ensuring that data has been loaded.
+func IsUsernameTaken(username string) bool {
+
+	if !UserDataLoaded {
+		// Data not loaded, return false as we can't confirm the existence of the username
+		return false
+	}
+
+	_, userExists := UserMap[username]
+	return userExists
+}
+
+func LoadUsers(filename string) {
 	userDataChan := make(chan any)
-	go RfileGeneral(userDataChan, "users.json", reflect.TypeOf(models.UserData{}))
+	go RfileGeneral(userDataChan, filename, reflect.TypeOf(models.UserData{}))
 
 	for user := range userDataChan {
 		// Type assertion
@@ -61,55 +50,44 @@ func LoadUsers() {
 
 		UserMap[userData.Username] = userData.Password
 	}
-	DataLoaded = true
+	UserDataLoaded = true
 }
 
 func EnsureDataLoaded() error {
 
-	if !DataLoaded {
+	if !UserDataLoaded {
 		return fmt.Errorf("data not yet loaded")
 	}
 	return nil
 }
 
-// IsUsernameTaken checks if the username is taken, ensuring that data has been loaded.
-func IsUsernameTaken(username string) bool {
-
-	if !DataLoaded {
-		// Data not loaded, return false as we can't confirm the existence of the username
-		return false
-	}
-
-	_, userExists := UserMap[username]
-	return userExists
-}
-
-func LoadCourseOutline() {
+func LoadCourseOutline(filename string) {
 	courseDataChan := make(chan any)
-	go RfileGeneral(courseDataChan, "courses.json", reflect.TypeOf(models.Course{}))
+	go RfileGeneral(courseDataChan, filename, reflect.TypeOf(models.CourseOutline{}))
 
 	for course := range courseDataChan {
-		courseData, ok := course.(*models.Course)
+		courseData, ok := course.(*models.CourseOutline)
 		if !ok {
 			fmt.Println("Error: received data is not of type models.Course")
 		}
-		CourseOutline = append(CourseOutline, *courseData)
+		CourseOutlineMap[courseData.ID] = courseData.Details
 
 	}
 
 }
 
-func LoadUserProgress() {
+func LoadUserProgress(filename string) {
 	progressChan := make(chan any)
 
-	go RfileGeneral(progressChan, "progress.json", reflect.TypeOf(models.UserProgress{}))
+	go RfileGeneral(progressChan, filename, reflect.TypeOf(models.UserProgress{}))
 
 	for progress := range progressChan {
 		userProgress, ok := progress.(*models.UserProgress)
 		if !ok {
 			fmt.Println("Error: received data is not of type models.Course")
 		}
-		ProgressMap[userProgress.Username] = userProgress.CompletedModules
+
+		ProgressMap[userProgress.Username] = userProgress.Progress
 
 	}
 
