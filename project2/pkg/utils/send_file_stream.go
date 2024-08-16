@@ -7,7 +7,7 @@ import (
 	"reflect"
 )
 
-func LoadObjectsFromFile(ch chan<- any, fileName string, structType reflect.Type) {
+func StreamJSONObjects(ch chan<- any, fileName string, structType reflect.Type) {
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println("Error opening file:", err)

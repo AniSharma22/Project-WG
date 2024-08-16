@@ -1,0 +1,26 @@
+[
+  {
+    "user_id": "29d39b30-5c13-11ef-8697-0a002700000a",
+    "name": "Anish Sharma",
+    "email": "anish.sharma@watchguard.com",
+    "password": "$2a$14$nHRWasSS0r7ZEv3k5TSyk.dHQGPeGYgpMKIXl1XWzlw.YaRoJqliC",
+    "phoneNo": "8949759565",
+    "gender": "male",
+    "totalWins": 0,
+    "totalLoss": 0,
+    "totalGames": 0,
+    "role": "admin"
+  },
+  {
+    "user_id": "371d07ab-5c16-11ef-80bd-0a002700000a",
+    "name": "rahul",
+    "email": "rahul.sharma@watchguard.com",
+    "password": "$2a$14$GbA8PrgLw06UQ9p8CXBFaOBYx1qCWuQn.T92Vp0P2hcx2qgpP1AtS",
+    "phoneNo": "8989898989",
+    "gender": "male",
+    "totalWins": 0,
+    "totalLoss": 0,
+    "totalGames": 0,
+    "role": "user"
+  }
+]

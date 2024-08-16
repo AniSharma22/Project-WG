@@ -12,18 +12,3 @@ type User struct {
 	TotalGames int    `json:"totalGames"`
 	Role       string `json:"role"`
 }
-
-func (u *User) Signup() {
-
-}
-
-func (u *User) Login() {
-
-}
-func (u *User) Logout() {}
-func (u *User) ViewStats() {
-}
-
-func (u *User) BookSlot(slot Slot) {
-
-}
