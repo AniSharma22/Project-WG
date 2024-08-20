@@ -6,20 +6,6 @@
     "password": "$2a$14$nHRWasSS0r7ZEv3k5TSyk.dHQGPeGYgpMKIXl1XWzlw.YaRoJqliC",
     "phoneNo": "8949759565",
     "gender": "male",
-    "game_stats": [
-      {
-        "game_id": "12d7cace-5c98-11ef-aefd-064017c18066",
-        "wins": 0,
-        "losses": 0,
-        "total_games": 0
-      },
-      {
-        "game_id": "12d7b52a-5c98-11ef-aefd-064017c18066",
-        "wins": 0,
-        "losses": 0,
-        "total_games": 0
-      }
-    ],
     "totalWins": 0,
     "totalLoss": 0,
     "totalGames": 0,
@@ -32,20 +18,6 @@
     "password": "$2a$14$GbA8PrgLw06UQ9p8CXBFaOBYx1qCWuQn.T92Vp0P2hcx2qgpP1AtS",
     "phoneNo": "8989898989",
     "gender": "male",
-    "game_stats": [
-      {
-        "game_id": "12d7cace-5c98-11ef-aefd-064017c18066",
-        "wins": 0,
-        "losses": 0,
-        "total_games": 0
-      },
-      {
-        "game_id": "12d7b52a-5c98-11ef-aefd-064017c18066",
-        "wins": 0,
-        "losses": 0,
-        "total_games": 0
-      }
-    ],
     "totalWins": 0,
     "totalLoss": 0,
     "totalGames": 0,
@@ -58,20 +30,6 @@
     "password": "$2a$14$YX4yd9KyVSNmKnq5RXolIeWhTicImpI/ogvAuae7jwaYsbomCnDI2",
     "phoneNo": "8989898989",
     "gender": "male",
-    "game_stats": [
-      {
-        "game_id": "12d7cace-5c98-11ef-aefd-064017c18066",
-        "wins": 0,
-        "losses": 0,
-        "total_games": 0
-      },
-      {
-        "game_id": "12d7b52a-5c98-11ef-aefd-064017c18066",
-        "wins": 0,
-        "losses": 0,
-        "total_games": 0
-      }
-    ],
     "totalWins": 0,
     "totalLoss": 0,
     "totalGames": 0,
