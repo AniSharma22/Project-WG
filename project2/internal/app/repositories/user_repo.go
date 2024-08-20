@@ -68,7 +68,129 @@ func (r *userRepo) CreateUser(user *entities.User) error {
 		return err
 	}
 
+	// Store the entry in the global map
+	globals.UsersMap[user.UserId] = *user
+
 	return nil
+}
+
+func (r *userRepo) AddWin(userId, gameId string) error {
+	file, err := os.OpenFile(config.UsersFile, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return err
+	}
+	defer file.Close()
+
+	var users []entities.User
+
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&users); err != nil && err != io.EOF {
+		fmt.Println("Error decoding existing users:", err)
+		return err
+	}
+
+	for _, user := range users {
+		if user.UserId == userId {
+			user.TotalGames++
+			user.TotalWins++
+			user.Score = utils.GetTotalScore(user.TotalWins, user.TotalLoss, user.TotalGames)
+			for _, game := range user.GameStats {
+				if game.GameID == gameId {
+					game.TotalGames++
+					game.Wins++
+					game.Score = utils.GetGameScore(game.Wins, game.Losses, game.TotalGames)
+				}
+			}
+			break
+		}
+	}
+
+	// Truncate the file to overwrite it with the updated users array
+	if err := file.Truncate(0); err != nil {
+		fmt.Println("Error truncating file:", err)
+		return err
+	}
+
+	// Move the file pointer to the beginning of the file
+	if _, err := file.Seek(0, 0); err != nil {
+		fmt.Println("Error seeking file:", err)
+		return err
+	}
+
+	// Encode the updated users array to JSON and write it back to the file
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ") // Optional: set indentation for pretty printing
+	if err := encoder.Encode(users); err != nil {
+		fmt.Println("error encoding data to file: %w", err)
+		return err
+	}
+
+	return nil
+
+}
+
+func (r *userRepo) AddLoss(userId, gameId string) error {
+	file, err := os.OpenFile(config.UsersFile, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return err
+	}
+	defer file.Close()
+
+	var users []entities.User
+
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&users); err != nil && err != io.EOF {
+		fmt.Println("Error decoding existing users:", err)
+		return err
+	}
+
+	for _, user := range users {
+		if user.UserId == userId {
+			user.TotalGames++
+			user.TotalLoss++
+			user.Score = utils.GetTotalScore(user.TotalWins, user.TotalLoss, user.TotalGames)
+			for _, game := range user.GameStats {
+				if game.GameID == gameId {
+					game.TotalGames++
+					game.Losses++
+					game.Score = utils.GetGameScore(game.Wins, game.Losses, game.TotalGames)
+				}
+			}
+			break
+		}
+	}
+
+	// Truncate the file to overwrite it with the updated users array
+	if err := file.Truncate(0); err != nil {
+		fmt.Println("Error truncating file:", err)
+		return err
+	}
+
+	// Move the file pointer to the beginning of the file
+	if _, err := file.Seek(0, 0); err != nil {
+		fmt.Println("Error seeking file:", err)
+		return err
+	}
+
+	// Encode the updated users array to JSON and write it back to the file
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ") // Optional: set indentation for pretty printing
+	if err := encoder.Encode(users); err != nil {
+		fmt.Println("error encoding data to file: %w", err)
+		return err
+	}
+
+	return nil
+
+}
+func (r *userRepo) GetAllUsers() ([]entities.User, error) {
+	var users []entities.User
+	for _, user := range globals.UsersMap {
+		users = append(users, user)
+	}
+	return users, nil
 }
 
 func loadAllUsers() {

@@ -1,0 +1,12 @@
+[
+  {
+    "game_id": "12d7b52a-5c98-11ef-aefd-064017c18066",
+    "name": "Air Hockey",
+    "max_players" : 2
+  },
+  {
+    "game_id": "12d7cace-5c98-11ef-aefd-064017c18066",
+    "name": "Table Tennis",
+    "max_players" : 4
+  }
+]
