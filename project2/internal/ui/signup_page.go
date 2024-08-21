@@ -1,10 +1,8 @@
 package ui
 
 import (
-	"bufio"
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
-	"os"
 	"project2/internal/domain/entities"
 	"project2/pkg/validation"
 	"strings"
@@ -12,13 +10,12 @@ import (
 )
 
 func (ui *UI) ShowSignupPage() {
-	reader := bufio.NewReader(os.Stdin)
 	var username, email, password, phoneNo, gender string
 
 	// Get valid username
 	for {
 		fmt.Print("Enter your username: ")
-		username, _ = reader.ReadString('\n')
+		username, _ = ui.reader.ReadString('\n')
 		username = strings.TrimSpace(username)
 		if validation.IsValidUsername(username) {
 			break
@@ -30,7 +27,7 @@ func (ui *UI) ShowSignupPage() {
 	// Get valid email
 	for {
 		fmt.Print("Enter your email: ")
-		email, _ = reader.ReadString('\n')
+		email, _ = ui.reader.ReadString('\n')
 		email = strings.TrimSpace(email)
 		if validation.IsValidEmail(email) && !validation.EmailAlreadyExists(email) {
 			break
@@ -39,6 +36,7 @@ func (ui *UI) ShowSignupPage() {
 		}
 	}
 
+	// Get and confirm password
 	for {
 		fmt.Print("Enter your password: ")
 		bytePassword1, err := terminal.ReadPassword(int(syscall.Stdin))
@@ -65,7 +63,7 @@ func (ui *UI) ShowSignupPage() {
 	// Get valid phone number
 	for {
 		fmt.Print("Enter your phone number: ")
-		phoneNo, _ = reader.ReadString('\n')
+		phoneNo, _ = ui.reader.ReadString('\n')
 		phoneNo = strings.TrimSpace(phoneNo)
 		if validation.IsValidPhoneNumber(phoneNo) {
 			break
@@ -77,7 +75,7 @@ func (ui *UI) ShowSignupPage() {
 	// Get valid gender
 	for {
 		fmt.Print("Enter your gender (Male/Female/Other): ")
-		gender, _ = reader.ReadString('\n')
+		gender, _ = ui.reader.ReadString('\n')
 		gender = strings.TrimSpace(gender)
 		if validation.IsValidGender(gender) {
 			break
@@ -86,6 +84,7 @@ func (ui *UI) ShowSignupPage() {
 		}
 	}
 
+	// Create the user entity
 	user := entities.User{
 		Name:     username,
 		Email:    email,
@@ -94,6 +93,7 @@ func (ui *UI) ShowSignupPage() {
 		Gender:   gender,
 	}
 
+	// Sign up the user
 	if err := ui.userService.Signup(&user); err != nil {
 		fmt.Println(err)
 		return

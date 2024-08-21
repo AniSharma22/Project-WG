@@ -6,8 +6,8 @@ import (
 )
 
 type SlotRepository interface {
-	GetSlotsByDate(date time.Time) ([]entities.Slot, error)
-	BookSlot(slotID string, user entities.User) error
-	GetPendingInvites(userID string) ([]entities.Slot, error)
-	UpdateSlot(slot entities.Slot) error
+	GetSlotsByDate(date string, gameId string) ([]entities.SlotStats, error)
+	GetSlotByDateAndTime(date string, gameId string, time time.Time) (entities.SlotStats, error)
+	BookSlot(user entities.User, date string, gameId string, time time.Time) error
+	GetPendingInvites(user entities.User, date string) ([]entities.Invites, error)
 }

@@ -14,9 +14,11 @@ func main() {
 
 	// Initialize the repository
 	userRepo := repositories.NewUserRepo()
+	gameRepo := repositories.NewGameRepo()
 
 	// Initialize the service
 	userService := services.NewUserService(userRepo)
+	gameService := services.NewGameService(gameRepo)
 
 	// handling graceful shutdown
 	sigChan := make(chan os.Signal, 1)
@@ -31,7 +33,7 @@ func main() {
 	}()
 
 	// set up the UI with user service
-	appUI := ui.NewUI(userService)
+	appUI := ui.NewUI(userService, gameService)
 
 	appUI.ShowMainMenu()
 

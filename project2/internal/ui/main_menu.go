@@ -2,11 +2,11 @@ package ui
 
 import (
 	"fmt"
+	"strings"
 )
 
 func (ui *UI) ShowMainMenu() {
 	for {
-		var choice string
 		fmt.Println("\033[1;36m") // Cyan bold
 		fmt.Println("===================================")
 		fmt.Println("     		  WELCOME    ")
@@ -17,12 +17,17 @@ func (ui *UI) ShowMainMenu() {
 		fmt.Println("2. Login")
 		fmt.Println("3. Exit")
 
-		fmt.Print("Enter your choice (1, 2 or 3): ")
-		_, err := fmt.Scanln(&choice)
+		fmt.Print("Enter your choice (1, 2, or 3): ")
+
+		// Read the input using the bufio.Reader
+		choice, err := ui.reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("Error reading input:", err)
 			continue
 		}
+
+		// Trim any whitespace or newline characters
+		choice = strings.TrimSpace(choice)
 
 		switch choice {
 		case "1":

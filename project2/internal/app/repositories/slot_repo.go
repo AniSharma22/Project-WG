@@ -10,19 +10,16 @@ import (
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
 	"project2/pkg/globals"
-	"project2/pkg/utils"
-	"reflect"
 	"time"
 )
 
 func init() {
 	if _, err := os.Stat(config.SlotsFile); err == nil {
-		go loadAllResults()
+		go loadAllSlots()
 	}
 }
 
 type slotRepo struct {
-	slots []entities.Slot // This can be replaced with actual database or file storage
 }
 
 func NewSlotRepo() interfaces.SlotRepository {
@@ -46,37 +43,15 @@ func (r *slotRepo) GetSlotByDateAndTime(date string, gameId string, time time.Ti
 	return entities.SlotStats{}, errors.New("this slot data is not available")
 }
 
-func (r *slotRepo) BookSlot(date string, gameId string, time time.Time, user entities.User) error {
-
-
-
-
-
-
-
-
-
-
-		// Access the slice of slots for the given date and gameId
-	slots := globals.SlotsMap[date][gameId]
-
-	// Find the slot with the specified time and update the BookedBy field
-	for i, slot := range slots {
-		if slot.Time == time {
-			// Update the BookedBy slice
-			slot.BookedBy = append(slot.BookedBy, user)
-
-			// Reassign the updated slot back to the slice
-			slots[i] = slot
-
-			// Update the map with the modified slice
-			globals.SlotsMap[date][gameId] = slots
-
-			return nil // Return early if the slot was successfully booked
+func (r *slotRepo) BookSlot(user entities.User, date string, gameId string, time time.Time) error {
+	fetchedSlot, _ := r.GetSlotsByDate(date, gameId)
+	for _, slots := range fetchedSlot {
+		if slots.Time == time {
+			slots.BookedBy = append(slots.BookedBy, user)
 		}
 	}
 
-
+	globals.SlotsMap[date][gameId] = fetchedSlot
 
 	file, err := os.OpenFile(config.SlotsFile, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
@@ -85,22 +60,30 @@ func (r *slotRepo) BookSlot(date string, gameId string, time time.Time, user ent
 	}
 	defer file.Close()
 
-	var slots2 [] entities.Slot
+	var slots []entities.Slot
 
-	// Decode existing results from the file, if the file is not empty
+	// Decode existing slots from the file, if the file is not empty
 	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&slots2); err != nil && err != io.EOF {
-		fmt.Println("Error decoding existing slots:", err)
+	if err := decoder.Decode(&slots); err != nil && err != io.EOF {
+		fmt.Println("Error decoding existing results:", err)
 		return err
 	}
 
-	for _, v := range slots2 {
-		if v.Date == date{
-
+	for _, slot := range slots {
+		if slot.Date == date {
+			for _, game := range slot.Games {
+				if game.GameID == gameId {
+					for _, v := range game.Slots {
+						if v.Time == time {
+							v.BookedBy = append(v.BookedBy, user)
+						}
+					}
+				}
+			}
 		}
 	}
 
-	// Truncate the file to overwrite it with the updated results array
+	// Truncate the file to overwrite it with the updated slots array
 	if err := file.Truncate(0); err != nil {
 		fmt.Println("Error truncating file:", err)
 		return err
@@ -112,121 +95,42 @@ func (r *slotRepo) BookSlot(date string, gameId string, time time.Time, user ent
 		return err
 	}
 
-	// Encode the updated games array to JSON and write it back to the file
+	// Encode the updated slots array to JSON and write it back to the file
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ") // Optional: set indentation for pretty printing
-	if err := encoder.Encode(slots2); err != nil {
+	if err := encoder.Encode(slots); err != nil {
 		fmt.Println("error encoding data to file: %w", err)
 		return err
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	return fmt.Errorf("slot not found or already booked")
+	return nil
 }
 
-func (r *slotRepo) GetPendingInvites(userID string) ([]entities.Slot, error) {
-	// Filter and return slots with pending invites for the user
-	var pendingInvites []entities.Slot
-	for _, slot := range r.slots {
-		for _, invitedUser := range slot.InvitedUsers {
-			if invitedUser.UserId == userID {
-				pendingInvites = append(pendingInvites, slot)
-				break
+func (r *slotRepo) GetPendingInvites(user entities.User, date string) ([]entities.Invites, error) {
+	var invites []entities.Invites
+
+	// Traverse through all games for the given date
+	for gameID, slots := range globals.SlotsMap[date] {
+		// Traverse through all slots for the current game
+		for _, slot := range slots {
+			// Check if the user is in the InvitedUsers array
+			for _, invitedUser := range slot.InvitedUsers {
+				if invitedUser.UserId == user.UserId {
+					// User is invited; add the invite details to the invites slice
+					invites = append(invites, entities.Invites{
+						Date: date,
+						Game: globals.GamesMap[gameID].Name,
+						Time: slot.Time,
+					})
+					break
+				}
 			}
 		}
 	}
-	return pendingInvites, nil
-}
 
-func (r *slotRepo) UpdateSlot(slot entities.Slot) error {
-	// Update the slot in the storage
-	for i, s := range r.slots {
-		if s.SlotID == slot.SlotID {
-			r.slots[i] = slot
-			return nil
-		}
-	}
-	return errors.New("slot not found")
+	return invites, nil
 }
 
 func loadAllSlots() {
-	slotDataChan := make(chan any)
-	go utils.StreamJSONObjects(slotDataChan, config.SlotsFile, reflect.TypeOf(entities.Slot{})) // Corrected type here
-
-	for slot := range slotDataChan {
-		slotData, ok := slot.(*entities.Slot)
-		if !ok {
-			fmt.Println("Error: received data is not of type *entities.Slot")
-			continue
-		}
-		// Initialize the date map if not already present
-		if _, exists := globals.SlotsMap[slotData.Date]; !exists {
-			globals.SlotsMap[slotData.Date] = make(map[string][]entities.SlotStats)
-		}
-		// Insert game slots into the appropriate date and gameID map
-		for _, v := range slotData.Games {
-			globals.SlotsMap[slotData.Date][v.GameID] = v.Slots
-		}
-	}
-
-	// Allow some time for the slot data to load
-	time.Sleep(2 * time.Second)
-	dateStr := time.Now().Format("2006-01-02") // Format date as "YYYY-MM-DD"
-
-	// Check if today's entry exists
-	_, exists := globals.SlotsMap[dateStr]
-	if !exists {
-		// Initialize map for today's date
-		globals.SlotsMap[dateStr] = make(map[string][]entities.SlotStats)
-
-		// Iterate over all game IDs
-		for gameId := range globals.GamesMap {
-			var slots []entities.SlotStats
-
-			// Generate slots from 09:00 AM to 06:00 PM with 20-minute intervals
-			startTime := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 9, 0, 0, 0, time.Local)
-			endTime := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 18, 0, 0, 0, time.Local)
-
-			for startTime.Before(endTime) {
-				slotId, _ := utils.GetUuid() // Generate slot ID
-				slot := entities.SlotStats{
-					SlotID:       slotId,
-					Time:         startTime,
-					BookedBy:     make([]entities.User, 0),
-					InvitedUsers: make([]entities.User, 0),
-					Duration:     20 * time.Minute,
-					IsBooked:     false,
-				}
-				slots = append(slots, slot)
-				startTime = startTime.Add(20 * time.Minute)
-			}
-
-			// Add the generated slots for the current game to the map
-			globals.SlotsMap[dateStr][gameId] = slots
-		}
-	}
-}
-
-
-
+	return
 }

@@ -1,10 +1,8 @@
 package ui
 
 import (
-	"bufio"
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
-	"os"
 	"project2/pkg/globals"
 	"project2/pkg/utils"
 	"project2/pkg/validation"
@@ -13,7 +11,6 @@ import (
 )
 
 func (ui *UI) ShowLoginPage() {
-	reader := bufio.NewReader(os.Stdin)
 
 	var email string
 	var password string
@@ -21,7 +18,7 @@ func (ui *UI) ShowLoginPage() {
 	// Get valid email
 	for {
 		fmt.Print("Enter your email: ")
-		email, _ = reader.ReadString('\n')
+		email, _ = ui.reader.ReadString('\n')
 		email = strings.TrimSpace(email)
 		if validation.IsValidEmail(email) {
 			break

@@ -1,16 +1,13 @@
 package services
 
 import (
-	"errors"
-	"fmt"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
-	"project2/pkg/globals"
 	"time"
 )
 
 type SlotService struct {
-	slotRepo    interfaces.SlotRepository
+	slotRepo    interfaces.SlotRepository // dependency injectin
 	userService *UserService
 }
 
@@ -21,10 +18,10 @@ func NewSlotService(slotRepo interfaces.SlotRepository, userService *UserService
 	}
 }
 
-
-func (s *SlotService) GetSlotsForToday(){
-	return s.slotRepo.GetSlotsByDate(time.DateOnly)
+func (s *SlotService) GetSlotsForToday() ([]entities.SlotStats, error) {
+	return s.slotRepo.GetSlotsByDate(time.DateOnly, "1")
 }
+
 //func (s *SlotService) GetSlotsForToday() ([]entities.Slot, error) {
 //	today := time.Now()
 //	slots, err := s.slotRepo.GetSlotsByDate(today)
@@ -67,5 +64,3 @@ func (s *SlotService) GetSlotsForToday(){
 //	}
 //	return nil
 //}
-
-fu

@@ -20,3 +20,9 @@ type SlotStats struct {
 	Duration     time.Duration `json:"duration"`      // Duration (should be 20 mins by default)
 	IsBooked     bool          `json:"is_booked"`     // To indicate if the slot is booked
 }
+
+type Invites struct {
+	Date string
+	Game string
+	Time time.Time
+}
