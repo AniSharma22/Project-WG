@@ -1,7 +1,11 @@
 package entities
 
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type Game struct {
-	GameId     string `json:"gameId"`
-	Name       string `json:"name"`
-	MaxPlayers int    `json:"maxPlayers"`
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Name        string             `bson:"name"`
+	MaxCapacity int                `bson:"maxCapacity"`
 }

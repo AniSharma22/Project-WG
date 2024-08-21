@@ -11,13 +11,15 @@
         "game_id": "12d7b52a-5c98-11ef-aefd-064017c18066",
         "wins": 0,
         "losses": 0,
-        "total_games": 0
+        "total_games": 0,
+        "score": 0
       },
       {
         "game_id": "12d7cace-5c98-11ef-aefd-064017c18066",
         "wins": 0,
         "losses": 0,
-        "total_games": 0
+        "total_games": 0,
+        "score": 0
       }
     ],
     "totalWins": 0,
@@ -38,13 +40,15 @@
         "game_id": "12d7b52a-5c98-11ef-aefd-064017c18066",
         "wins": 0,
         "losses": 0,
-        "total_games": 0
+        "total_games": 0,
+        "score": 0
       },
       {
         "game_id": "12d7cace-5c98-11ef-aefd-064017c18066",
         "wins": 0,
         "losses": 0,
-        "total_games": 0
+        "total_games": 0,
+        "score": 0
       }
     ],
     "totalWins": 0,
@@ -65,13 +69,44 @@
         "game_id": "12d7b52a-5c98-11ef-aefd-064017c18066",
         "wins": 0,
         "losses": 0,
-        "total_games": 0
+        "total_games": 0,
+        "score": 0
       },
       {
         "game_id": "12d7cace-5c98-11ef-aefd-064017c18066",
         "wins": 0,
         "losses": 0,
-        "total_games": 0
+        "total_games": 0,
+        "score": 0
+      }
+    ],
+    "totalWins": 0,
+    "totalLoss": 0,
+    "totalGames": 0,
+    "totalScore": 0,
+    "role": "user"
+  },
+  {
+    "user_id": "bdf193e7-5fd1-11ef-90d6-0a002700000a",
+    "name": "gaurav",
+    "email": "gaurav.mangat@watchguard.com",
+    "password": "$2a$14$cCTA4b90C5JHc01Fx3JnEOPThEyDttp1ryJuP/fpGsfLBAT0N50yy",
+    "phoneNo": "8989898989",
+    "gender": "male",
+    "game_stats": [
+      {
+        "game_id": "12d7b52a-5c98-11ef-aefd-064017c18066",
+        "wins": 0,
+        "losses": 0,
+        "total_games": 0,
+        "score": 0
+      },
+      {
+        "game_id": "12d7cace-5c98-11ef-aefd-064017c18066",
+        "wins": 0,
+        "losses": 0,
+        "total_games": 0,
+        "score": 0
       }
     ],
     "totalWins": 0,

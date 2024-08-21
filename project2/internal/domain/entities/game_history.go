@@ -5,10 +5,11 @@ import (
 	"time"
 )
 
-type Notification struct {
+type GameHistory struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	SlotID    primitive.ObjectID `bson:"slotId"`
 	UserID    primitive.ObjectID `bson:"userId"`
-	Message   string             `bson:"message"`
+	GameID    primitive.ObjectID `bson:"gameId"`
+	SlotID    primitive.ObjectID `bson:"slotId"`
+	Result    string             `bson:"result"`
 	CreatedAt time.Time          `bson:"createdAt"`
 }
