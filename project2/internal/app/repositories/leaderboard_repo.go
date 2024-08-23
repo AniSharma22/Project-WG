@@ -1,42 +1,76 @@
 package repositories
 
 import (
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"project2/internal/config"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
-	"sort"
+	"project2/pkg/globals"
 )
 
 type leaderboardRepo struct {
+	collection *mongo.Collection
 }
 
-func NewLeaderboardRepo() interfaces.Leaderboard {
-	return &leaderboardRepo{}
-}
-
-func (r *leaderboardRepo) GetGameLeaderboard(gameId string, users []entities.User) ([]entities.User, error) {
-	var gameIndex int
-	for i, game := range users[0].GameStats {
-		if game.GameID == gameId {
-			gameIndex = i
-		}
+func NewLeaderboardRepo() interfaces.LeaderboardRepository {
+	return &leaderboardRepo{
+		collection: globals.Client.Database(config.DBName).Collection("Leaderboards"),
 	}
-	sortByGameScore(gameIndex, users)
-	return users, nil
 }
 
-func (r *leaderboardRepo) GetOverallLeaderboard(users []entities.User) ([]entities.User, error) {
-	sortByScore(users)
-	return users, nil
+func (r *leaderboardRepo) GetGameLeaderboard(gameId primitive.ObjectID) ([]entities.Leaderboard, error) {
+	filter := bson.M{"gameId": gameId}
+	opts := options.Find().SetSort(bson.D{{"score", -1}}) // Sort by score in descending order
+
+	cursor, err := r.collection.Find(context.Background(), filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var leaderboards []entities.Leaderboard
+	if err := cursor.All(context.Background(), &leaderboards); err != nil {
+		return nil, err
+	}
+
+	return leaderboards, nil
 }
 
-func sortByScore(users []entities.User) {
-	sort.Slice(users, func(i, j int) bool {
-		return users[i].Score > users[j].Score
-	})
+func (r *leaderboardRepo) GetOverallLeaderboard() ([]entities.Leaderboard, error) {
+	opts := options.Find().SetSort(bson.D{{"score", -1}}) // Sort by score in descending order
+
+	cursor, err := r.collection.Find(context.Background(), bson.M{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var leaderboards []entities.Leaderboard
+	if err := cursor.All(context.Background(), &leaderboards); err != nil {
+		return nil, err
+	}
+
+	return leaderboards, nil
 }
 
-func sortByGameScore(gameIndex int, users []entities.User) {
-	sort.Slice(users, func(i, j int) bool {
-		return users[i].GameStats[gameIndex].Score > users[j].GameStats[gameIndex].Score
-	})
+func (r *leaderboardRepo) AddOrUpdateLeaderboardEntry(entry *entities.Leaderboard) error {
+	filter := bson.M{
+		"gameId": entry.GameID,
+		"userId": entry.UserID,
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"score": entry.Score,
+			"rank":  entry.Rank,
+		},
+	}
+
+	upsertOpts := options.Update().SetUpsert(true)
+	_, err := r.collection.UpdateOne(context.Background(), filter, update, upsertOpts)
+	return err
 }

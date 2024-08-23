@@ -4,32 +4,21 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
 	"project2/internal/domain/entities"
+	"project2/pkg/utils"
 	"project2/pkg/validation"
 	"strings"
 	"syscall"
 )
 
 func (ui *UI) ShowSignupPage() {
-	var username, email, password, phoneNo, gender string
-
-	// Get valid username
-	for {
-		fmt.Print("Enter your username: ")
-		username, _ = ui.reader.ReadString('\n')
-		username = strings.TrimSpace(username)
-		if validation.IsValidUsername(username) {
-			break
-		} else {
-			fmt.Println("Invalid username. Please try again.")
-		}
-	}
+	var email, password, phoneNo, gender string
 
 	// Get valid email
 	for {
 		fmt.Print("Enter your email: ")
 		email, _ = ui.reader.ReadString('\n')
 		email = strings.TrimSpace(email)
-		if validation.IsValidEmail(email) && !validation.EmailAlreadyExists(email) {
+		if validation.IsValidEmail(email) && ui.userService.EmailAlreadyExists(email) {
 			break
 		} else {
 			fmt.Println("Invalid email. Please try again.")
@@ -55,7 +44,7 @@ func (ui *UI) ShowSignupPage() {
 		if string(bytePassword1) != string(bytePassword2) {
 			fmt.Println("Passwords did not match. Please try again.")
 		} else {
-			password = string(bytePassword1)
+			password, _ = utils.GetHashedPassword(bytePassword1)
 			break
 		}
 	}
@@ -86,7 +75,6 @@ func (ui *UI) ShowSignupPage() {
 
 	// Create the user entity
 	user := entities.User{
-		Name:     username,
 		Email:    email,
 		Password: password,
 		PhoneNo:  phoneNo,

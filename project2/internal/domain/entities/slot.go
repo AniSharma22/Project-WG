@@ -1,28 +1,20 @@
 package entities
 
-import "time"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type Result struct {
+	UserID primitive.ObjectID `bson:"userId"`
+	Result string             `bson:"result"`
+}
 
 type Slot struct {
-	Date  string      `json:"date"`  // Date of the slots
-	Games []GameSlots `json:"games"` // Slots grouped by games
-}
-
-type GameSlots struct {
-	GameID string      `json:"game_id"` // ID of the game
-	Slots  []SlotStats `json:"slots"`   // List of slots for the game
-}
-
-type SlotStats struct {
-	SlotID       string        `json:"slot_id"`
-	Time         time.Time     `json:"time"`          // Slot start time
-	BookedBy     []User        `json:"booked_by"`     // Users who booked the slot
-	InvitedUsers []User        `json:"invited_users"` // Users invited to the slot
-	Duration     time.Duration `json:"duration"`      // Duration (should be 20 mins by default)
-	IsBooked     bool          `json:"is_booked"`     // To indicate if the slot is booked
-}
-
-type Invites struct {
-	Date string
-	Game string
-	Time time.Time
+	ID          primitive.ObjectID   `bson:"_id,omitempty"`
+	GameID      primitive.ObjectID   `bson:"gameId"`
+	Date        string               `bson:"date"`
+	StartTime   string               `bson:"startTime"`
+	EndTime     string               `bson:"endTime"`
+	BookedUsers []primitive.ObjectID `bson:"bookedUsers"`
+	Results     []Result             `bson:"results"`
 }

@@ -1,210 +1,189 @@
 package repositories
 
 import (
-	"encoding/json"
+	"context"
+	"errors"
 	"fmt"
-	"io"
-	"os"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"project2/internal/config"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
 	"project2/pkg/globals"
 	"project2/pkg/utils"
-	"reflect"
 )
 
-func init() {
-	if _, err := os.Stat(config.UsersFile); err == nil {
-		go loadAllUsers()
-	}
-}
-
 type userRepo struct {
-	// Database connection or other dependencies
+	collection *mongo.Collection
 }
 
 func NewUserRepo() interfaces.UserRepository {
-	return &userRepo{}
+	return &userRepo{
+		collection: globals.Client.Database(config.DBName).Collection("Users"),
+	}
 }
 
 func (r *userRepo) CreateUser(user *entities.User) error {
-	// Read the existing users from the file
-	file, err := os.OpenFile(config.UsersFile, os.O_RDWR|os.O_CREATE, 0666)
+	_, err := r.collection.InsertOne(context.Background(), user)
 	if err != nil {
-		fmt.Println("Error opening file:", err)
+		fmt.Println("Error inserting user:", err)
 		return err
 	}
-	defer file.Close()
-
-	var users []entities.User
-
-	// Decode existing users from the file, if the file is not empty
-	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&users); err != nil && err != io.EOF {
-		fmt.Println("Error decoding existing users:", err)
-		return err
-	}
-
-	// Append the new user to the users array
-	users = append(users, *user)
-
-	// Truncate the file to overwrite it with the updated users array
-	if err := file.Truncate(0); err != nil {
-		fmt.Println("Error truncating file:", err)
-		return err
-	}
-
-	// Move the file pointer to the beginning of the file
-	if _, err := file.Seek(0, 0); err != nil {
-		fmt.Println("Error seeking file:", err)
-		return err
-	}
-
-	// Encode the updated users array to JSON and write it back to the file
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ") // Optional: set indentation for pretty printing
-	if err := encoder.Encode(users); err != nil {
-		fmt.Println("error encoding data to file: %w", err)
-		return err
-	}
-
-	// Store the entry in the global map
-	globals.UsersMap[user.UserId] = *user
-
 	return nil
 }
 
-func (r *userRepo) AddWin(userId, gameId string) error {
-	file, err := os.OpenFile(config.UsersFile, os.O_RDWR|os.O_CREATE, 0666)
+func (r *userRepo) GetUserByEmail(email string) (*entities.User, error) {
+	filter := bson.M{"email": email}
+
+	var user entities.User
+	err := r.collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return err
-	}
-	defer file.Close()
-
-	var users []entities.User
-
-	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&users); err != nil && err != io.EOF {
-		fmt.Println("Error decoding existing users:", err)
-		return err
-	}
-
-	for _, user := range users {
-		if user.UserId == userId {
-			user.TotalGames++
-			user.TotalWins++
-			user.Score = utils.GetTotalScore(user.TotalWins, user.TotalLoss, user.TotalGames)
-			for _, game := range user.GameStats {
-				if game.GameID == gameId {
-					game.TotalGames++
-					game.Wins++
-					game.Score = utils.GetGameScore(game.Wins, game.Losses, game.TotalGames)
-				}
-			}
-			break
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, fmt.Errorf("user not found for email: %s", email)
 		}
+		return nil, fmt.Errorf("error querying database: %w", err)
 	}
 
-	// Truncate the file to overwrite it with the updated users array
-	if err := file.Truncate(0); err != nil {
-		fmt.Println("Error truncating file:", err)
-		return err
+	if user.ID.IsZero() {
+		return nil, fmt.Errorf("user found but ID is zero for email: %s", email)
 	}
 
-	// Move the file pointer to the beginning of the file
-	if _, err := file.Seek(0, 0); err != nil {
-		fmt.Println("Error seeking file:", err)
-		return err
-	}
-
-	// Encode the updated users array to JSON and write it back to the file
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ") // Optional: set indentation for pretty printing
-	if err := encoder.Encode(users); err != nil {
-		fmt.Println("error encoding data to file: %w", err)
-		return err
-	}
-
-	return nil
-
+	return &user, nil
 }
 
-func (r *userRepo) AddLoss(userId, gameId string) error {
-	file, err := os.OpenFile(config.UsersFile, os.O_RDWR|os.O_CREATE, 0666)
+// EmailAlreadyExists checks if the email already exists in the database.
+func (r *userRepo) EmailAlreadyExists(email string) error {
+	// Create a filter to find a document with the specified email
+	filter := bson.M{"email": email}
+
+	// Perform the query to find one document with the specified email
+	var result entities.User
+	err := r.collection.FindOne(context.TODO(), filter).Decode(&result)
+
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		// No document found, email does not exist
+		return nil
+	} else if err != nil {
+		// Error occurred while querying
+		return err
+	}
+
+	fmt.Println(result)
+
+	// Email already exists
+	return nil
+}
+
+func (r *userRepo) AddWin(userId primitive.ObjectID) error {
+	filter := bson.D{{"_id", userId}}
+	update := bson.D{
+		{"$inc", bson.D{
+			{"wins", 1},
+			{"overallScore", utils.GetTotalScore(1, 0)}, // Pass wins and losses for total score calculation
+		}},
+	}
+
+	_, err := r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		fmt.Println("Error opening file:", err)
+		fmt.Println("Error updating user wins:", err)
 		return err
 	}
-	defer file.Close()
-
-	var users []entities.User
-
-	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&users); err != nil && err != io.EOF {
-		fmt.Println("Error decoding existing users:", err)
-		return err
-	}
-
-	for _, user := range users {
-		if user.UserId == userId {
-			user.TotalGames++
-			user.TotalLoss++
-			user.Score = utils.GetTotalScore(user.TotalWins, user.TotalLoss, user.TotalGames)
-			for _, game := range user.GameStats {
-				if game.GameID == gameId {
-					game.TotalGames++
-					game.Losses++
-					game.Score = utils.GetGameScore(game.Wins, game.Losses, game.TotalGames)
-				}
-			}
-			break
-		}
-	}
-
-	// Truncate the file to overwrite it with the updated users array
-	if err := file.Truncate(0); err != nil {
-		fmt.Println("Error truncating file:", err)
-		return err
-	}
-
-	// Move the file pointer to the beginning of the file
-	if _, err := file.Seek(0, 0); err != nil {
-		fmt.Println("Error seeking file:", err)
-		return err
-	}
-
-	// Encode the updated users array to JSON and write it back to the file
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ") // Optional: set indentation for pretty printing
-	if err := encoder.Encode(users); err != nil {
-		fmt.Println("error encoding data to file: %w", err)
-		return err
-	}
-
 	return nil
-
 }
+
+func (r *userRepo) AddLoss(userId primitive.ObjectID) error {
+	filter := bson.D{{"_id", userId}}
+	update := bson.D{
+		{"$inc", bson.D{
+			{"losses", 1},
+			{"overallScore", utils.GetTotalScore(0, 1)}, // Pass wins and losses for total score calculation
+		}},
+	}
+
+	_, err := r.collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		fmt.Println("Error updating user losses:", err)
+		return err
+	}
+	return nil
+}
+
 func (r *userRepo) GetAllUsers() ([]entities.User, error) {
+	cursor, err := r.collection.Find(context.Background(), bson.D{})
+	if err != nil {
+		fmt.Println("Error finding users:", err)
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
 	var users []entities.User
-	for _, user := range globals.UsersMap {
+	for cursor.Next(context.Background()) {
+		var user entities.User
+		if err := cursor.Decode(&user); err != nil {
+			fmt.Println("Error decoding user:", err)
+			return nil, err
+		}
 		users = append(users, user)
 	}
+	if err := cursor.Err(); err != nil {
+		fmt.Println("Cursor error:", err)
+		return nil, err
+	}
+
 	return users, nil
 }
 
-func loadAllUsers() {
-	userDataChan := make(chan any)
-	go utils.StreamJSONObjects(userDataChan, config.UsersFile, reflect.TypeOf(entities.User{}))
+func (r *userRepo) GetUserById(userId primitive.ObjectID) (*entities.User, error) {
+	filter := bson.D{{"_id", userId}}
+	var user entities.User
+	err := r.collection.FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, fmt.Errorf("user not found for id: %s", userId)
 
-	for user := range userDataChan {
-		// Type assertion
-		userData, ok := user.(*entities.User)
-		if !ok {
-			fmt.Println("Error: received data is not of type models.UserData")
-			continue
 		}
-
-		globals.UsersMap[userData.Email] = *userData
 	}
+	return &user, nil
+}
+
+func (r *userRepo) GetPendingInvites(email string) ([]entities.InvitedSlot, error) {
+	filter := bson.M{"email": email}
+	var user entities.User
+
+	// Find the user document
+	err := r.collection.FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, fmt.Errorf("user not found for email: %s", email)
+		}
+		return nil, fmt.Errorf("error fetching user: %w", err)
+	}
+
+	// Return the invites
+	return user.InvitedSlots, nil
+}
+
+func (r *userRepo) DeleteInvite(slotId primitive.ObjectID) error {
+	email := globals.ActiveUser
+
+	// Define the filter to find the user by email
+	filter := bson.M{"email": email}
+
+	// Define the update to pull the slotId from the invitedSlots array
+	update := bson.M{
+		"$pull": bson.M{
+			"invitedSlots": bson.M{
+				"slotId": slotId,
+			},
+		},
+	}
+
+	// Perform the update operation
+	_, err := r.collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -3,8 +3,6 @@ package ui
 import (
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
-	"project2/pkg/globals"
-	"project2/pkg/utils"
 	"project2/pkg/validation"
 	"strings"
 	"syscall"
@@ -13,7 +11,7 @@ import (
 func (ui *UI) ShowLoginPage() {
 
 	var email string
-	var password string
+	var password []byte
 
 	// Get valid email
 	for {
@@ -34,18 +32,12 @@ func (ui *UI) ShowLoginPage() {
 		fmt.Println("Error reading password:", err)
 		return
 	}
-	password = string(bytePassword)
+	password = bytePassword
 	fmt.Println() // Add a newline after password input
 
-	// Verify email and password
-	user, exists := globals.UsersMap[email]
-	if !exists {
-		fmt.Println("User does not exist.")
-		return
-	}
-
-	if !utils.VerifyPassword(password, user.Password) {
-		fmt.Println("Invalid password.")
+	user, err := ui.userService.Login(email, password)
+	if err != nil {
+		fmt.Println("Error logging in:", err)
 		return
 	}
 

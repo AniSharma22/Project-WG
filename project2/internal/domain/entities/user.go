@@ -1,24 +1,26 @@
 package entities
 
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type User struct {
-	UserId     string      `json:"user_id"`
-	Name       string      `json:"name"`
-	Email      string      `json:"email"`
-	Password   string      `json:"password"`
-	PhoneNo    string      `json:"phoneNo"`
-	Gender     string      `json:"gender"`
-	GameStats  []GameStats `json:"game_stats"`
-	TotalWins  int         `json:"totalWins"`
-	TotalLoss  int         `json:"totalLoss"`
-	TotalGames int         `json:"totalGames"`
-	Score      float32     `json:"totalScore"`
-	Role       string      `json:"role"`
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	Email        string             `bson:"email"`
+	Password     string             `bson:"password"`
+	PhoneNo      string             `bson:"phoneNumber"`
+	Gender       string             `bson:"gender"`
+	Wins         int                `bson:"wins"`
+	Losses       int                `bson:"losses"`
+	OverallScore int                `bson:"overallScore"`
+	InvitedSlots []InvitedSlot      `bson:"invitedSlots"`
+	Role         string             `bson:"role"`
 }
 
-type GameStats struct {
-	GameID     string  `json:"game_id"`
-	Wins       int     `json:"wins"`
-	Losses     int     `json:"losses"`
-	TotalGames int     `json:"total_games"`
-	Score      float32 `json:"score"`
+type InvitedSlot struct {
+	SlotID    primitive.ObjectID `bson:"slotId"`
+	GameID    primitive.ObjectID `bson:"gameId"`
+	Date      string             `bson:"date"`
+	StartTime string             `bson:"startTime"`
+	EndTime   string             `bson:"endTime"`
 }

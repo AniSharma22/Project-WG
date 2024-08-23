@@ -1,7 +1,6 @@
 package validation
 
 import (
-	"project2/pkg/globals"
 	"regexp"
 	"strings"
 	"unicode"
@@ -18,11 +17,6 @@ func IsValidUsername(username string) bool {
 func IsValidEmail(email string) bool {
 	re := regexp.MustCompile(`^[a-zA-Z]+\.[a-zA-Z]+@watchguard\.com$`)
 	return re.MatchString(strings.ToLower(email))
-}
-
-func EmailAlreadyExists(email string) bool {
-	_, exists := globals.UsersMap[email]
-	return exists
 }
 
 // Password must have 1 uppercase, 1 lowercase, 1 special character and minimum 8 length
@@ -51,10 +45,6 @@ func IsValidPassword(password string) bool {
 func IsValidPhoneNumber(phoneNumber string) bool {
 	re := regexp.MustCompile(`^[6-9]\d{9}$`)
 	return re.MatchString(phoneNumber)
-}
-
-func IsAdmin(email string) bool {
-	return globals.UsersMap[email].Role == "admin"
 }
 
 func IsValidGender(gender string) bool {

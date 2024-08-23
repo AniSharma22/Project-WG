@@ -15,7 +15,8 @@ func GetUuid() (string, error) {
 	return u.String(), nil
 }
 
-func GetTotalScore(totalWins, totalLosses, totalGames int) float32 {
+func GetTotalScore(totalWins, totalLosses int) float32 {
+	totalGames := totalWins + totalLosses
 	return calculateScore(totalWins, totalLosses, totalGames)
 }
 
