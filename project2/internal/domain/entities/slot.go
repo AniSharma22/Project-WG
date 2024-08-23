@@ -2,7 +2,6 @@ package entities
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"time"
 )
 
 type Result struct {
@@ -14,8 +13,8 @@ type Slot struct {
 	ID          primitive.ObjectID   `bson:"_id,omitempty"`
 	GameID      primitive.ObjectID   `bson:"gameId"`
 	Date        string               `bson:"date"`
-	StartTime   time.Time            `bson:"startTime"`
-	EndTime     time.Time            `bson:"endTime"`
+	StartTime   string               `bson:"startTime"`
+	EndTime     string               `bson:"endTime"`
 	BookedUsers []primitive.ObjectID `bson:"bookedUsers"`
 	Results     []Result             `bson:"results"`
 }

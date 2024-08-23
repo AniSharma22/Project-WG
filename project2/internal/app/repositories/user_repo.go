@@ -34,22 +34,21 @@ func (r *userRepo) CreateUser(user *entities.User) error {
 }
 
 func (r *userRepo) GetUserByEmail(email string) (*entities.User, error) {
-	// Create a filter to find a document with the specified email
 	filter := bson.M{"email": email}
 
-	// Perform the query to find one document with the specified email
 	var user entities.User
-	err := r.collection.FindOne(context.TODO(), filter).Decode(user)
+	err := r.collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			// No document found, return a custom error indicating user not found
-			return nil, errors.New("user not found")
+			return nil, fmt.Errorf("user not found for email: %s", email)
 		}
-		// Error occurred while querying
-		return nil, err
+		return nil, fmt.Errorf("error querying database: %w", err)
 	}
 
-	// Return the user and nil as the error
+	if user.ID.IsZero() {
+		return nil, fmt.Errorf("user found but ID is zero for email: %s", email)
+	}
+
 	return &user, nil
 }
 
@@ -133,4 +132,58 @@ func (r *userRepo) GetAllUsers() ([]entities.User, error) {
 	}
 
 	return users, nil
+}
+
+func (r *userRepo) GetUserById(userId primitive.ObjectID) (*entities.User, error) {
+	filter := bson.D{{"_id", userId}}
+	var user entities.User
+	err := r.collection.FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, fmt.Errorf("user not found for id: %s", userId)
+
+		}
+	}
+	return &user, nil
+}
+
+func (r *userRepo) GetPendingInvites(email string) ([]entities.InvitedSlot, error) {
+	filter := bson.M{"email": email}
+	var user entities.User
+
+	// Find the user document
+	err := r.collection.FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, fmt.Errorf("user not found for email: %s", email)
+		}
+		return nil, fmt.Errorf("error fetching user: %w", err)
+	}
+
+	// Return the invites
+	return user.InvitedSlots, nil
+}
+
+func (r *userRepo) DeleteInvite(slotId primitive.ObjectID) error {
+	email := globals.ActiveUser
+
+	// Define the filter to find the user by email
+	filter := bson.M{"email": email}
+
+	// Define the update to pull the slotId from the invitedSlots array
+	update := bson.M{
+		"$pull": bson.M{
+			"invitedSlots": bson.M{
+				"slotId": slotId,
+			},
+		},
+	}
+
+	// Perform the update operation
+	_, err := r.collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

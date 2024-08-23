@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
 	"project2/internal/domain/entities"
+	"project2/pkg/utils"
 	"project2/pkg/validation"
 	"strings"
 	"syscall"
@@ -43,7 +44,7 @@ func (ui *UI) ShowSignupPage() {
 		if string(bytePassword1) != string(bytePassword2) {
 			fmt.Println("Passwords did not match. Please try again.")
 		} else {
-			password = string(bytePassword1)
+			password, _ = utils.GetHashedPassword(bytePassword1)
 			break
 		}
 	}

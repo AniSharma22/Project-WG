@@ -5,9 +5,8 @@ import (
 	"unicode"
 )
 
-// GetHashedPassword HashPassword generates a bcrypt hash for the given password.
-func GetHashedPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+func GetHashedPassword(password []byte) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword(password, 14)
 	if err != nil {
 		return "", err
 	}
@@ -15,8 +14,8 @@ func GetHashedPassword(password string) (string, error) {
 }
 
 // VerifyPassword verifies if the given password matches the stored hash.
-func VerifyPassword(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+func VerifyPassword(password []byte, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), password)
 	return err == nil
 }
 

@@ -11,9 +11,10 @@ type LeaderboardService struct {
 	leaderboardWG   *sync.WaitGroup
 }
 
-func NewLeaderboardService(leaderBoardRepo interfaces.LeaderboardRepository) *LeaderboardService {
+func NewLeaderboardService(leaderBoardRepo interfaces.LeaderboardRepository, userService *UserService) *LeaderboardService {
 	return &LeaderboardService{
 		leaderBoardRepo: leaderBoardRepo,
+		userService:     userService,
 		leaderboardWG:   &sync.WaitGroup{},
 	}
 }

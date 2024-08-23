@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"errors"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,7 +11,6 @@ import (
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
 	"project2/pkg/globals"
-	"time"
 )
 
 type slotRepo struct {
@@ -24,30 +24,30 @@ func NewSlotRepo() interfaces.SlotRepository {
 }
 
 // GetSlotsByDate retrieves all slots for a given date and game.
-func (r *slotRepo) GetSlotsByDate(date string, gameId string) ([]entities.Slot, error) {
+func (r *slotRepo) GetSlotsByDate(date string, gameId primitive.ObjectID) ([]entities.Slot, error) {
 	filter := bson.M{"date": date, "gameId": gameId}
 	cursor, err := r.collection.Find(context.Background(), filter)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to retrieve slots: %w", err)
 	}
 	defer cursor.Close(context.Background())
 
 	var slots []entities.Slot
 	if err := cursor.All(context.Background(), &slots); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to decode slots: %w", err)
 	}
 
 	return slots, nil
 }
 
 // GetSlotByDateAndTime retrieves a specific slot by date and time.
-func (r *slotRepo) GetSlotByDateAndTime(date string, gameId string, time time.Time) (*entities.Slot, error) {
-	filter := bson.M{"date": date, "gameId": gameId, "startTime": time}
+func (r *slotRepo) GetSlotByDateAndTime(date string, gameId primitive.ObjectID, startTime string) (*entities.Slot, error) {
+	filter := bson.M{"date": date, "gameId": gameId, "startTime": startTime}
 	var slot entities.Slot
 	err := r.collection.FindOne(context.Background(), filter).Decode(&slot)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, errors.New("this slot data is not available")
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, fmt.Errorf("this slot data is not available")
 		}
 		return nil, err
 	}
@@ -55,14 +55,44 @@ func (r *slotRepo) GetSlotByDateAndTime(date string, gameId string, time time.Ti
 }
 
 // BookSlot books a slot for a user.
-func (r *slotRepo) BookSlot(userId primitive.ObjectID, date string, gameId string, time time.Time) error {
-	filter := bson.M{"date": date, "gameId": gameId, "startTime": time}
-	update := bson.M{
-		"$addToSet": bson.M{"bookedUsers": userId},
-	}
+func (r *slotRepo) BookSlot(userId primitive.ObjectID, date string, gameId primitive.ObjectID, startTime string) error {
+	filter := bson.M{"date": date, "gameId": gameId, "startTime": startTime}
+	update := bson.M{"$addToSet": bson.M{"bookedUsers": userId}}
 	_, err := r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (r *slotRepo) InviteToSlot(userId primitive.ObjectID, date string, gameId primitive.ObjectID, startTime string) error {
+	filter := bson.M{
+		"date":      date,
+		"gameId":    gameId,
+		"startTime": startTime,
+	}
+	update := bson.M{"$addToSet": bson.M{"invitedUsers": userId}}
+	_, err := r.collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *slotRepo) InsertSlot(slot entities.Slot) (*mongo.InsertOneResult, error) {
+
+	return r.collection.InsertOne(context.Background(), slot)
+}
+func (r *slotRepo) GetSlotById(slotId primitive.ObjectID) (*entities.Slot, error) {
+	filter := bson.M{"_id": slotId}
+	var slot entities.Slot
+	err := r.collection.FindOne(context.Background(), filter).Decode(&slot)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, fmt.Errorf("this slot data is not available")
+
+		}
+		return nil, err
+	}
+	return &slot, nil
 }

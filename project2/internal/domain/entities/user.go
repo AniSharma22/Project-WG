@@ -2,12 +2,10 @@ package entities
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"time"
 )
 
 type User struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
-	Username     string             `bson:"username"`
 	Email        string             `bson:"email"`
 	Password     string             `bson:"password"`
 	PhoneNo      string             `bson:"phoneNumber"`
@@ -22,7 +20,7 @@ type User struct {
 type InvitedSlot struct {
 	SlotID    primitive.ObjectID `bson:"slotId"`
 	GameID    primitive.ObjectID `bson:"gameId"`
-	Date      time.Time          `bson:"date"`
-	StartTime time.Time          `bson:"startTime"`
-	EndTime   time.Time          `bson:"endTime"`
+	Date      string             `bson:"date"`
+	StartTime string             `bson:"startTime"`
+	EndTime   string             `bson:"endTime"`
 }

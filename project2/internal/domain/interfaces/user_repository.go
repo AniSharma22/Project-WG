@@ -12,4 +12,7 @@ type UserRepository interface {
 	GetAllUsers() ([]entities.User, error)
 	EmailAlreadyExists(email string) error
 	GetUserByEmail(email string) (*entities.User, error)
+	GetUserById(userId primitive.ObjectID) (*entities.User, error)
+	GetPendingInvites(email string) ([]entities.InvitedSlot, error)
+	DeleteInvite(slotId primitive.ObjectID) error
 }
