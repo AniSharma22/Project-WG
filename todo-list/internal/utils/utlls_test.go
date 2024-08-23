@@ -6,10 +6,10 @@ import (
 	"testing"
 )
 
-const testUsersFile = "C:\\Users\\anisharma\\GolandProjects\\goprac\\project\\testJson\\testUsers.json"
-const testCoursesFile = "C:\\Users\\anisharma\\GolandProjects\\goprac\\project\\testJson\\testCourses.json"
-const testProgressFile = "C:\\Users\\anisharma\\GolandProjects\\goprac\\project\\testJson\\testProgress.json"
-const testTodosFile = "C:\\Users\\anisharma\\GolandProjects\\goprac\\project\\testJson\\testTodos.json"
+const testUsersFile = "C:\\Users\\anisharma\\GolandProjects\\goprac\\todo-list\\testJson\\testUsers.json"
+const testCoursesFile = "C:\\Users\\anisharma\\GolandProjects\\goprac\\todo-list\\testJson\\testCourses.json"
+const testProgressFile = "C:\\Users\\anisharma\\GolandProjects\\goprac\\todo-list\\testJson\\testProgress.json"
+const testTodosFile = "C:\\Users\\anisharma\\GolandProjects\\goprac\\todo-list\\testJson\\testTodos.json"
 
 // Mock data for testing
 var (
