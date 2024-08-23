@@ -56,22 +56,9 @@ func (r *slotRepo) GetSlotByDateAndTime(date string, gameId primitive.ObjectID, 
 
 // BookSlot books a slot for a user.
 func (r *slotRepo) BookSlot(userId primitive.ObjectID, date string, gameId primitive.ObjectID, startTime string) error {
+
 	filter := bson.M{"date": date, "gameId": gameId, "startTime": startTime}
 	update := bson.M{"$addToSet": bson.M{"bookedUsers": userId}}
-	_, err := r.collection.UpdateOne(context.Background(), filter, update)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (r *slotRepo) InviteToSlot(userId primitive.ObjectID, date string, gameId primitive.ObjectID, startTime string) error {
-	filter := bson.M{
-		"date":      date,
-		"gameId":    gameId,
-		"startTime": startTime,
-	}
-	update := bson.M{"$addToSet": bson.M{"invitedUsers": userId}}
 	_, err := r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return err

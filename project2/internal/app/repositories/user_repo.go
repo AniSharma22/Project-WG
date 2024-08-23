@@ -33,6 +33,29 @@ func (r *userRepo) CreateUser(user *entities.User) error {
 	return nil
 }
 
+func (r *userRepo) AddToInvites(userId primitive.ObjectID, invite entities.InvitedSlot) error {
+	// Create a filter to find the user by ID
+	fmt.Println("idhar aagya")
+	fmt.Println(userId)
+	filter := bson.M{"_id": userId}
+
+	// Create an update to add the invite to the InvitedSlots array
+	update := bson.M{
+		"$push": bson.M{
+			"invitedSlots": invite,
+		},
+	}
+
+	// Perform the update operation
+	_, err := r.collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		fmt.Println("Error updating user with invited slot:", err)
+		return err
+	}
+
+	return nil
+}
+
 func (r *userRepo) GetUserByEmail(email string) (*entities.User, error) {
 	filter := bson.M{"email": email}
 

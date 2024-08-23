@@ -11,14 +11,16 @@ import (
 )
 
 type SlotService struct {
-	slotRepo    interfaces.SlotRepository
-	UserService *UserService
+	slotRepo        interfaces.SlotRepository
+	userRepo        interfaces.UserRepository
+	gameHistoryRepo interfaces.GameHistoryRepository
 }
 
-func NewSlotService(slotRepo interfaces.SlotRepository, userService *UserService) *SlotService {
+func NewSlotService(slotRepo interfaces.SlotRepository, userRepo interfaces.UserRepository, gameHistoryRepo interfaces.GameHistoryRepository) *SlotService {
 	return &SlotService{
-		slotRepo:    slotRepo,
-		UserService: userService,
+		slotRepo:        slotRepo,
+		userRepo:        userRepo,
+		gameHistoryRepo: gameHistoryRepo,
 	}
 }
 
@@ -72,7 +74,7 @@ func (s *SlotService) BookSlot(game *entities.Game, slot *entities.Slot) error {
 	}
 
 	// Proceed to book the slot using the repository
-	user, err := s.UserService.GetUserByEmail(globals.ActiveUser)
+	user, err := s.userRepo.GetUserByEmail(globals.ActiveUser)
 	if err != nil {
 		return fmt.Errorf("failed to get user: %v", err)
 	}
@@ -81,6 +83,15 @@ func (s *SlotService) BookSlot(game *entities.Game, slot *entities.Slot) error {
 	if err != nil {
 		return fmt.Errorf("failed to book slot: %v", err)
 	}
+	history := entities.GameHistory{
+		ID:        primitive.NewObjectID(),
+		UserID:    user.ID,
+		GameID:    game.ID,
+		SlotID:    slot.ID,
+		Result:    "",
+		CreatedAt: time.Now(),
+	}
+	s.gameHistoryRepo.AddGameHistory(&history)
 
 	return nil
 }
@@ -112,12 +123,29 @@ func (s *SlotService) InviteToSlot(userId primitive.ObjectID, game *entities.Gam
 		return fmt.Errorf("cannot invite: the slot is already fully booked")
 	}
 
-	// Call the repository's InviteToSlot method with the correct parameters
-	err = s.slotRepo.InviteToSlot(userId, now.Format("2006-01-02"), game.ID, slot.StartTime)
-	if err != nil {
-		return fmt.Errorf("failed to invite user: %v", err)
+	// Check if the user has already booked in this slot
+	alreadyBooked := false
+	for _, bookedUserID := range slot.BookedUsers {
+		if bookedUserID == userId {
+			alreadyBooked = true
+			break
+		}
+	}
+	if alreadyBooked {
+		return fmt.Errorf("cannot invite: the user has already booked in this slot")
 	}
 
+	inviteSlot := entities.InvitedSlot{
+		SlotID:    slot.ID,
+		GameID:    game.ID,
+		Date:      now.Format("2006-01-02"),
+		StartTime: slot.StartTime,
+		EndTime:   slot.EndTime,
+	}
+	err = s.userRepo.AddToInvites(userId, inviteSlot)
+	if err != nil {
+		return fmt.Errorf("failed to invite: %v", err)
+	}
 	return nil
 }
 

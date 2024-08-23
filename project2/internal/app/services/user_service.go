@@ -30,6 +30,7 @@ func NewUserService(userRepo interfaces.UserRepository, slotService *SlotService
 func (s *UserService) Signup(user *entities.User) error {
 
 	user.Role = "user"
+	user.InvitedSlots = []entities.InvitedSlot{}
 
 	// Create the user
 	if err := s.userRepo.CreateUser(user); err != nil {
@@ -102,32 +103,22 @@ func (s *UserService) GetPendingInvites(email string) ([]entities.InvitedSlot, e
 	return updatedInvites, nil
 }
 
-func (s *UserService) AcceptInvite(slotId primitive.ObjectID) error {
-	// Retrieve the user
-	user, err := s.userRepo.GetUserByEmail(globals.ActiveUser)
+func (s *UserService) AcceptInvite(invitedSlot entities.InvitedSlot) error {
+	game, err := s.GameService.GetGameByID(invitedSlot.GameID)
 	if err != nil {
 		return err
 	}
-
-	// Retrieve the slot
-	slot, err := s.SlotService.GetSlotById(slotId)
+	slot, err := s.SlotService.GetSlotById(invitedSlot.SlotID)
 	if err != nil {
 		return err
 	}
-
-	// Check if there is space in the slot
-	if len(slot.BookedUsers) >= slot.GameID {
-		return errors.New("no space available in the slot")
-	}
-
-	// Add user to the slot's bookedUsers array
-	err = s.slotRepo.AddUserToSlot(slotId, user.ID)
+	err = s.SlotService.BookSlot(game, slot)
 	if err != nil {
 		return err
 	}
 
 	// Delete the invite from the user's invitedSlots
-	err = s.userRepo.DeleteInvite(slotId)
+	err = s.userRepo.DeleteInvite(invitedSlot.SlotID)
 	if err != nil {
 		return err
 	}
@@ -135,8 +126,12 @@ func (s *UserService) AcceptInvite(slotId primitive.ObjectID) error {
 	return nil
 }
 
-func (s *UserService) RejectInvite(slotId primitive.ObjectID) error {
-
+func (s *UserService) RejectInvite(invitedSlot entities.InvitedSlot) error {
+	err := s.userRepo.DeleteInvite(invitedSlot.SlotID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 //func (s *UserService) Signup(user *entities.User) error {

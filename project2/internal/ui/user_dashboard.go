@@ -14,8 +14,9 @@ func (ui *UI) ShowUserDashboard() {
 		fmt.Println("1. Game Room")
 		fmt.Println("2. View Pending Invites")
 		fmt.Println("3. View Leaderboard")
-		fmt.Println("4. View Profile")
-		fmt.Println("5. Logout")
+		fmt.Println("4. Update Results")
+		fmt.Println("5. View Profile")
+		fmt.Println("6. Logout")
 
 		fmt.Print("Enter your choice (1-5): ")
 		choice, err := ui.reader.ReadString('\n')
@@ -37,11 +38,15 @@ func (ui *UI) ShowUserDashboard() {
 			fmt.Println("Viewing Leaderboard...")
 			ui.ViewLeaderboard() // Placeholder function, implement as needed
 		case "4":
+			fmt.Println("Redirecting to update results screen")
+			ui.UpdateResults()
+		case "5":
 			fmt.Println("Viewing Profile...")
 			ui.ViewProfile() // Placeholder function, implement as needed
-		case "5":
+		case "6":
 			fmt.Println("Logging out...")
 			return
+
 		default:
 			fmt.Println("Invalid choice. Please enter a number between 1 and 5.")
 		}

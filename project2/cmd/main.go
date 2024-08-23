@@ -35,13 +35,16 @@ func main() {
 
 	// Initialize all services
 	gameService := services.NewGameService(gameRepo)
-	slotService := services.NewSlotService(slotRepo, userService)
+	slotService := services.NewSlotService(slotRepo, userRepo, gameHistoryRepo)
 	userService := services.NewUserService(userRepo, slotService, gameService)
-	gameHistoryService := services.NewGameHistoryService(gameHistoryRepo)
+	gameHistoryService := services.NewGameHistoryService(gameHistoryRepo, userService)
 	leaderboardService := services.NewLeaderboardService(leaderboardRepo, userService)
 	notificationService := services.NewNotificationService(notificationRepo)
 	// Insert today's slots
-	insertAllSlots(slotRepo, gameRepo)
+	err = insertAllSlots(slotRepo, gameRepo)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Handling graceful shutdown
 	sigChan := make(chan os.Signal, 1)

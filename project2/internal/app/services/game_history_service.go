@@ -1,20 +1,42 @@
 package services
 
 import (
+	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
+	"project2/pkg/globals"
 	"sync"
 )
 
 type GameHistoryService struct {
 	gameHistoryRepo interfaces.GameHistoryRepository
+	userService     *UserService
 	gameHistoryWG   *sync.WaitGroup
 }
 
-func NewGameHistoryService(gameHistoryRepo interfaces.GameHistoryRepository) *GameHistoryService {
+func NewGameHistoryService(gameHistoryRepo interfaces.GameHistoryRepository, userService *UserService) *GameHistoryService {
 	return &GameHistoryService{
 		gameHistoryRepo: gameHistoryRepo,
+		userService:     userService,
 		gameHistoryWG:   &sync.WaitGroup{},
 	}
+}
+
+func (gh *GameHistoryService) GetTotalGameHistory() ([]entities.GameHistory, error) {
+	user, err := gh.userService.GetUserByEmail(globals.ActiveUser)
+	if err != nil {
+		return nil, err
+	}
+
+	return gh.gameHistoryRepo.GetUserGameHistory(user.ID)
+}
+
+func (gh *GameHistoryService) GetResultsToUpdate() ([]entities.GameHistory, error) {
+	user, err := gh.userService.GetUserByEmail(globals.ActiveUser)
+	if err != nil {
+		return nil, err
+	}
+
+	return gh.gameHistoryRepo.GetResultsToUpdate(user.ID)
 }
 
 //func (r *GameHistoryService) AddResult(result *entities.Result) error {

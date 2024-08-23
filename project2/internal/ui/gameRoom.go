@@ -20,11 +20,13 @@ func (ui *UI) ShowGameRoom() {
 	for i, game := range games {
 		fmt.Printf("%d. %s\n", i+1, game.Name)
 	}
+	// Add an option to go back
+	fmt.Printf("%d. Go Back\n", len(games)+1)
 
-	// Prompt the user to select a game
+	// Prompt the user to select a game or go back
 	var choice int
 	for {
-		fmt.Print("Select a game by entering the corresponding number: ")
+		fmt.Print("Select an option by entering the corresponding number: ")
 		input, err := ui.reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("Error reading input:", err)
@@ -36,11 +38,16 @@ func (ui *UI) ShowGameRoom() {
 
 		// Convert the input to an integer
 		choice, err = strconv.Atoi(input)
-		if err != nil || choice < 1 || choice > len(games) {
-			fmt.Println("Invalid input. Please enter a number corresponding to a game.")
+		if err != nil || choice < 1 || choice > len(games)+1 {
+			fmt.Println("Invalid input. Please enter a number corresponding to an option.")
 		} else {
 			break
 		}
+	}
+
+	// Handle the user's choice
+	if choice == len(games)+1 {
+		return
 	}
 
 	// Get the selected game object

@@ -15,4 +15,5 @@ type UserRepository interface {
 	GetUserById(userId primitive.ObjectID) (*entities.User, error)
 	GetPendingInvites(email string) ([]entities.InvitedSlot, error)
 	DeleteInvite(slotId primitive.ObjectID) error
+	AddToInvites(userId primitive.ObjectID, invite entities.InvitedSlot) error
 }

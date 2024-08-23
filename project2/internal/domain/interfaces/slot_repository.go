@@ -11,6 +11,5 @@ type SlotRepository interface {
 	GetSlotByDateAndTime(date string, gameId primitive.ObjectID, startTime string) (*entities.Slot, error)
 	BookSlot(userId primitive.ObjectID, date string, gameId primitive.ObjectID, startTime string) error
 	InsertSlot(slot entities.Slot) (*mongo.InsertOneResult, error)
-	InviteToSlot(userId primitive.ObjectID, date string, gameId primitive.ObjectID, startTime string) error
 	GetSlotById(slotId primitive.ObjectID) (*entities.Slot, error)
 }

@@ -10,4 +10,6 @@ type GameHistoryRepository interface {
 	RemoveGameHistory(historyID primitive.ObjectID) error
 	FindGameHistoryByID(historyID primitive.ObjectID) (*entities.GameHistory, error)
 	GetAllGameHistories() ([]entities.GameHistory, error)
+	GetUserGameHistory(userId primitive.ObjectID) ([]entities.GameHistory, error)
+	GetResultsToUpdate(userId primitive.ObjectID) ([]entities.GameHistory, error)
 }

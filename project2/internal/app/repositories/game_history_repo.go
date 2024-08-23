@@ -81,3 +81,65 @@ func (r *gameHistoryRepo) GetAllGameHistories() ([]entities.GameHistory, error) 
 
 	return histories, nil
 }
+
+func (r *gameHistoryRepo) GetUserGameHistory(userId primitive.ObjectID) ([]entities.GameHistory, error) {
+	filter := bson.M{"userId": userId}
+	var histories []entities.GameHistory
+
+	// Execute the query to find matching game histories
+	cursor, err := r.collection.Find(context.Background(), filter)
+	if err != nil {
+		fmt.Println("Error finding game histories:", err)
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	// Iterate through the cursor to decode each document into a GameHistory object
+	for cursor.Next(context.Background()) {
+		var history entities.GameHistory
+		if err := cursor.Decode(&history); err != nil {
+			fmt.Println("Error decoding game history:", err)
+			return nil, err
+		}
+		histories = append(histories, history)
+	}
+
+	// Check if there were any errors during the cursor iteration
+	if err := cursor.Err(); err != nil {
+		fmt.Println("Cursor error:", err)
+		return nil, err
+	}
+
+	return histories, nil
+}
+
+func (r *gameHistoryRepo) GetResultsToUpdate(userId primitive.ObjectID) ([]entities.GameHistory, error) {
+	filter := bson.M{"userId": userId, "result": ""}
+	var histories []entities.GameHistory
+
+	// Execute the query to find matching game histories
+	cursor, err := r.collection.Find(context.Background(), filter)
+	if err != nil {
+		fmt.Println("Error finding game histories:", err)
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	// Iterate through the cursor to decode each document into a GameHistory object
+	for cursor.Next(context.Background()) {
+		var history entities.GameHistory
+		if err := cursor.Decode(&history); err != nil {
+			fmt.Println("Error decoding game history:", err)
+			return nil, err
+		}
+		histories = append(histories, history)
+	}
+
+	// Check if there were any errors during the cursor iteration
+	if err := cursor.Err(); err != nil {
+		fmt.Println("Cursor error:", err)
+		return nil, err
+	}
+
+	return histories, nil
+}

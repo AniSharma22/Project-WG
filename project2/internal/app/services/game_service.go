@@ -27,11 +27,15 @@ func (s *GameService) GetAllGames() ([]entities.Game, error) {
 	return s.gameRepo.GetAllGames()
 }
 
-//func (s *GameService) CreateGame(game *entities.Game) error {
-//	game.GameId, _ = utils.GetUuid()
-//	return s.gameRepo.CreateGame(game)
-//}
+func (s *GameService) CreateGame(name string, maxPlayers int) error {
+	game := entities.Game{
+		ID:          primitive.NewObjectID(),
+		Name:        name,
+		MaxCapacity: maxPlayers,
+	}
+	return s.gameRepo.CreateGame(&game)
+}
 
-//func (s *GameService) DeleteGame(gameId string) error {
-//	return s.gameRepo.DeleteGame(gameId)
-//}
+func (s *GameService) DeleteGame(gameId primitive.ObjectID) error {
+	return s.gameRepo.DeleteGame(gameId)
+}
