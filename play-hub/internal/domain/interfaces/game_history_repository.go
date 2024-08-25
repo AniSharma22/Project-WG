@@ -12,4 +12,6 @@ type GameHistoryRepository interface {
 	GetAllGameHistories() ([]entities.GameHistory, error)
 	GetUserGameHistory(userId primitive.ObjectID) ([]entities.GameHistory, error)
 	GetResultsToUpdate(userId primitive.ObjectID) ([]entities.GameHistory, error)
+	GetCurrentDayHistory(userId primitive.ObjectID) ([]entities.GameHistory, error)
+	UpdateResult(result string, slotId primitive.ObjectID, userID primitive.ObjectID) error
 }

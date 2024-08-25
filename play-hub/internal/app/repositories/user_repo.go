@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"project2/internal/config"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
@@ -33,16 +34,14 @@ func (r *userRepo) CreateUser(user *entities.User) error {
 	return nil
 }
 
-func (r *userRepo) AddToInvites(userId primitive.ObjectID, invite entities.InvitedSlot) error {
+func (r *userRepo) AddToInvites(userId primitive.ObjectID, slotId primitive.ObjectID) error {
 	// Create a filter to find the user by ID
-	fmt.Println("idhar aagya")
-	fmt.Println(userId)
 	filter := bson.M{"_id": userId}
 
 	// Create an update to add the invite to the InvitedSlots array
 	update := bson.M{
 		"$push": bson.M{
-			"invitedSlots": invite,
+			"invitedSlots": slotId,
 		},
 	}
 
@@ -170,7 +169,7 @@ func (r *userRepo) GetUserById(userId primitive.ObjectID) (*entities.User, error
 	return &user, nil
 }
 
-func (r *userRepo) GetPendingInvites(email string) ([]entities.InvitedSlot, error) {
+func (r *userRepo) GetPendingInvites(email string) ([]primitive.ObjectID, error) {
 	filter := bson.M{"email": email}
 	var user entities.User
 
@@ -196,9 +195,7 @@ func (r *userRepo) DeleteInvite(slotId primitive.ObjectID) error {
 	// Define the update to pull the slotId from the invitedSlots array
 	update := bson.M{
 		"$pull": bson.M{
-			"invitedSlots": bson.M{
-				"slotId": slotId,
-			},
+			"invitedSlots": slotId,
 		},
 	}
 
@@ -209,4 +206,34 @@ func (r *userRepo) DeleteInvite(slotId primitive.ObjectID) error {
 	}
 
 	return nil
+}
+
+func (r *userRepo) GetAllUsersByScore() ([]entities.User, error) {
+	var users []entities.User
+
+	// Define the sort filter to sort by OverallScore in descending order
+	opts := options.Find().SetSort(bson.M{"overallScore": -1})
+
+	// Perform the find operation with the sort options
+	cursor, err := r.collection.Find(context.Background(), bson.M{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	// Iterate through the cursor and decode each user
+	for cursor.Next(context.Background()) {
+		var user entities.User
+		if err := cursor.Decode(&user); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	// Check for errors during cursor iteration
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }

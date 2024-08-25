@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
+	"project2/internal/models"
 	"project2/pkg/globals"
 	"project2/pkg/utils"
 	"sync"
@@ -30,7 +31,7 @@ func NewUserService(userRepo interfaces.UserRepository, slotService *SlotService
 func (s *UserService) Signup(user *entities.User) error {
 
 	user.Role = "user"
-	user.InvitedSlots = []entities.InvitedSlot{}
+	user.InvitedSlots = []primitive.ObjectID{}
 
 	// Create the user
 	if err := s.userRepo.CreateUser(user); err != nil {
@@ -71,10 +72,10 @@ func (s *UserService) GetUserByEmail(email string) (*entities.User, error) {
 	return s.userRepo.GetUserByEmail(email)
 }
 
-// GetPendingInvites retrieves pending invites and removes expired ones
-func (s *UserService) GetPendingInvites(email string) ([]entities.InvitedSlot, error) {
+// returns all the pending invites for upcoming games and deletes the expired ones
+func (s *UserService) GetPendingInvites() ([]models.Invite, error) {
 	// Retrieve all pending invites
-	invites, err := s.userRepo.GetPendingInvites(email)
+	invites, err := s.userRepo.GetPendingInvites(globals.ActiveUser)
 	if err != nil {
 		return nil, err
 	}
@@ -82,43 +83,62 @@ func (s *UserService) GetPendingInvites(email string) ([]entities.InvitedSlot, e
 	// Current time
 	now := time.Now()
 
-	// Iterate over invites and remove expired ones
+	// List to hold valid (non-expired) invites
+	var validInvites []models.Invite
+
+	// Iterate over invites and filter out expired ones
 	for _, invite := range invites {
-		startTime, _ := parseSlotTime(invite.StartTime)
-		if startTime.Before(now) {
+		slot, _ := s.SlotService.GetSlotById(invite)
+		if slot.StartTime.Before(now) {
 			// Remove the expired invite from the repository
-			err := s.userRepo.DeleteInvite(invite.SlotID)
+			err := s.userRepo.DeleteInvite(invite)
 			if err != nil {
 				return nil, err
 			}
+		} else {
+			// Add valid invite to the list by creating a invite object
+			inviteToAdd := models.Invite{
+				SlotId: slot.ID,
+				GameName: func() string {
+					game, _ := s.GameService.GetGameByID(slot.GameID)
+					return game.Name
+				}(),
+				Date:      slot.Date,
+				StartTime: slot.StartTime,
+				EndTime:   slot.EndTime,
+				BookedUsers: func() []string {
+					var bookedUsers []string
+					for _, userId := range slot.BookedUsers {
+						user, _ := s.userRepo.GetUserById(userId)
+						bookedUsers = append(bookedUsers, utils.GetNameFromEmail(user.Email))
+					}
+					return bookedUsers
+				}(),
+			}
+			validInvites = append(validInvites, inviteToAdd)
 		}
 	}
 
-	// Retrieve updated list of pending invites
-	updatedInvites, err := s.userRepo.GetPendingInvites(email)
-	if err != nil {
-		return nil, err
-	}
-
-	return updatedInvites, nil
+	return validInvites, nil
 }
 
-func (s *UserService) AcceptInvite(invitedSlot entities.InvitedSlot) error {
-	game, err := s.GameService.GetGameByID(invitedSlot.GameID)
+func (s *UserService) AcceptInvite(slotId primitive.ObjectID) error {
+	slot, err := s.SlotService.GetSlotById(slotId)
 	if err != nil {
 		return err
 	}
-	slot, err := s.SlotService.GetSlotById(invitedSlot.SlotID)
+	game, err := s.GameService.GetGameByID(slot.GameID)
 	if err != nil {
 		return err
 	}
+
 	err = s.SlotService.BookSlot(game, slot)
 	if err != nil {
 		return err
 	}
 
 	// Delete the invite from the user's invitedSlots
-	err = s.userRepo.DeleteInvite(invitedSlot.SlotID)
+	err = s.userRepo.DeleteInvite(slotId)
 	if err != nil {
 		return err
 	}
@@ -126,92 +146,26 @@ func (s *UserService) AcceptInvite(invitedSlot entities.InvitedSlot) error {
 	return nil
 }
 
-func (s *UserService) RejectInvite(invitedSlot entities.InvitedSlot) error {
-	err := s.userRepo.DeleteInvite(invitedSlot.SlotID)
+func (s *UserService) RejectInvite(slotId primitive.ObjectID) error {
+	err := s.userRepo.DeleteInvite(slotId)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (s *UserService) AddResult(userId primitive.ObjectID, result string) error {
+	if result == "win" {
+		s.userRepo.AddWin(userId)
+	} else if result == "loss" {
+		s.userRepo.AddLoss(userId)
+	} else {
+		return errors.New("wrong result")
 	}
 	return nil
 }
 
-//func (s *UserService) Signup(user *entities.User) error {
-//	// Set user role
-//	user.Role = "user"
-//	//Initialize GameStats with all GameIDs from the global map
-//	user.GameStats = make([]entities.GameStats, 0, len(globals.GamesMap))
-//	for gameID := range globals.GamesMap {
-//		user.GameStats = append(user.GameStats, entities.GameStats{
-//			GameID:     gameID,
-//			Wins:       0,
-//			Losses:     0,
-//			TotalGames: 0,
-//			Score:      0.0,
-//		})
-//	}
-//
-//	// Generate UUID for the user
-//	uuid, err := utils.GetUuid()
-//	if err != nil {
-//		fmt.Println("Error generating UUID: ", err)
-//		return err
-//	}
-//	user.UserId = uuid
-//
-//	// Hash the user's password
-//	hashedPassword, err := utils.GetHashedPassword(user.Password)
-//	if err != nil {
-//		fmt.Println("Error generating password hash: ", err)
-//		return err
-//	}
-//	user.Password = hashedPassword
-//
-//	s.userWG.Add(1)
-//	// Launch the goroutine to save data concurrently
-//	go func() {
-//		defer s.userWG.Done()
-//		err := s.userRepo.CreateUser(user)
-//		if err != nil {
-//			fmt.Println("Error creating user: ", err)
-//		}
-//	}()
-//
-//	// set the user as the active user
-//	globals.ActiveUser = user.Email
-//	return nil
-//}
-//
-//func (s *UserService) Login(email string, password string) (*entities.User, error) {
-//	user, exists := globals.UsersMap[email]
-//	if !exists {
-//		return nil, errors.New("user not found")
-//	}
-//
-//	isValidUser := utils.VerifyPassword(user.Password, password)
-//	if !isValidUser {
-//		return nil, errors.New("wrong password")
-//	}
-//
-//	// set the user as the active user
-//	globals.ActiveUser = user.Email
-//	return &user, nil
-//}
-//
-//func (s *UserService) GetAllUsers() []entities.User {
-//	users, err := s.userRepo.GetAllUsers()
-//	if err != nil {
-//		return nil
-//	}
-//	return users
-//}
-//
-//func (s *UserService) AddWinToUser(user *entities.User, gameId string) error {
-//	return s.userRepo.AddWin(user.UserId, gameId)
-//}
-//
-//func (s *UserService) AddLossToUser(user *entities.User, gameId string) error {
-//	return s.userRepo.AddLoss(user.UserId, gameId)
-//}
-//
-//func (s *UserService) WaitForCompletion() {
-//	s.userWG.Wait()
-//}
+func (s *UserService) GetAllUsersByScore() ([]entities.User, error) {
+	return s.userRepo.GetAllUsersByScore()
+}

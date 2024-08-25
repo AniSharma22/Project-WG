@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -11,10 +10,9 @@ import (
 	"os/signal"
 	"project2/internal/app/repositories"
 	"project2/internal/app/services"
-	"project2/internal/domain/entities"
-	"project2/internal/domain/interfaces"
 	"project2/internal/ui"
 	"project2/pkg/globals"
+	"project2/pkg/utils"
 	"syscall"
 	"time"
 )
@@ -37,11 +35,11 @@ func main() {
 	gameService := services.NewGameService(gameRepo)
 	slotService := services.NewSlotService(slotRepo, userRepo, gameHistoryRepo)
 	userService := services.NewUserService(userRepo, slotService, gameService)
-	gameHistoryService := services.NewGameHistoryService(gameHistoryRepo, userService)
+	gameHistoryService := services.NewGameHistoryService(gameHistoryRepo, userService, slotService)
 	leaderboardService := services.NewLeaderboardService(leaderboardRepo, userService)
 	notificationService := services.NewNotificationService(notificationRepo)
 	// Insert today's slots
-	err = insertAllSlots(slotRepo, gameRepo)
+	err = utils.InsertAllSlots(slotRepo, gameRepo)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -70,54 +68,6 @@ func InitClient(uri string) error {
 		return err
 	}
 	globals.Client = client
-	return nil
-}
-
-func insertAllSlots(slotRepo interfaces.SlotRepository, gameRepo interfaces.GameRepository) error {
-	today := time.Now().Format("2006-01-02")
-
-	// Fetch all games
-	games, err := gameRepo.GetAllGames()
-	if err != nil {
-		return fmt.Errorf("error fetching games: %w", err)
-	}
-
-	now := time.Now()
-	startTime := time.Date(now.Year(), now.Month(), now.Day(), 9, 0, 0, 0, time.Local)
-	endTime := time.Date(now.Year(), now.Month(), now.Day(), 18, 0, 0, 0, time.Local)
-
-	for _, game := range games {
-		// Check for existing slots for this game on today's date
-		existingSlots, err := slotRepo.GetSlotsByDate(today, game.ID)
-		if err != nil {
-			return fmt.Errorf("error checking existing slots for game %s: %w", game.Name, err)
-		}
-
-		// If no slots exist, create new slots
-		if len(existingSlots) == 0 {
-			for current := startTime; current.Before(endTime); current = current.Add(20 * time.Minute) {
-				slotEndTime := current.Add(20 * time.Minute)
-				if slotEndTime.After(endTime) {
-					slotEndTime = endTime
-				}
-
-				newSlot := entities.Slot{
-					ID:          primitive.NewObjectID(),
-					GameID:      game.ID,
-					Date:        today,
-					StartTime:   current.Format("15:04"),
-					EndTime:     slotEndTime.Format("15:04"),
-					BookedUsers: []primitive.ObjectID{},
-					Results:     []entities.Result{},
-				}
-
-				// Insert the new slot
-				if _, err := slotRepo.InsertSlot(newSlot); err != nil {
-					return fmt.Errorf("error inserting slot for game %s: %w", game.Name, err)
-				}
-			}
-		}
-	}
-
+	globals.IstLocation, err = time.LoadLocation("Asia/Kolkata")
 	return nil
 }

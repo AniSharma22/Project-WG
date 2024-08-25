@@ -1,6 +1,7 @@
 package services
 
 import (
+	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
 	"sync"
 )
@@ -19,18 +20,10 @@ func NewLeaderboardService(leaderBoardRepo interfaces.LeaderboardRepository, use
 	}
 }
 
-//func (s *LeaderboardService) GetOverallLeaderboard() []entities.User {
-//	users := s.userService.GetAllUsers()
-//	if len(users) == 0 {
-//		return nil
-//	}
-//	overAllLeaderboard, err := s.leaderBoardRepo.GetOverallLeaderboard(users)
-//	if err != nil {
-//		return nil
-//	}
-//	return overAllLeaderboard
-//
-//}
+func (s *LeaderboardService) GetOverallLeaderboard() ([]entities.User, error) {
+	return s.userService.GetAllUsersByScore()
+}
+
 //
 //func (s *LeaderboardService) GetGameLeaderboard(gameId string) []entities.User {
 //	users := s.userService.GetAllUsers()

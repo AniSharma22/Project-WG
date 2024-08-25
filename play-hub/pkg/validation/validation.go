@@ -6,13 +6,6 @@ import (
 	"unicode"
 )
 
-func IsValidUsername(username string) bool {
-	if len(username) == 0 || len(username) > 30 {
-		return false
-	}
-	return true
-}
-
 // checks if the email is of the format name.surname@watchguard.com
 func IsValidEmail(email string) bool {
 	re := regexp.MustCompile(`^[a-zA-Z]+\.[a-zA-Z]+@watchguard\.com$`)

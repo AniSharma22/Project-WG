@@ -9,6 +9,7 @@ import (
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
 	"project2/pkg/globals"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -142,4 +143,59 @@ func (r *gameHistoryRepo) GetResultsToUpdate(userId primitive.ObjectID) ([]entit
 	}
 
 	return histories, nil
+}
+
+func (r *gameHistoryRepo) GetCurrentDayHistory(userId primitive.ObjectID) ([]entities.GameHistory, error) {
+	// Get the current date and the start and end of the day
+	now := time.Now()
+	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	endOfDay := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 999999999, now.Location())
+
+	// Construct the filter to match userId and createdAt within the current day
+	filter := bson.M{
+		"userId": userId,
+		"createdAt": bson.M{
+			"$gte": startOfDay,
+			"$lt":  endOfDay,
+		},
+	}
+
+	// Perform the query and get a cursor
+	cursor, err := r.collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	// Iterate through the cursor and decode each document into the history slice
+	var history []entities.GameHistory
+	for cursor.Next(context.Background()) {
+		var gameHistory entities.GameHistory
+		if err := cursor.Decode(&gameHistory); err != nil {
+			return nil, err
+		}
+		history = append(history, gameHistory)
+	}
+
+	// Check for any errors encountered during iteration
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return history, nil
+}
+
+func (r *gameHistoryRepo) UpdateResult(result string, slotId primitive.ObjectID, userID primitive.ObjectID) error {
+	filter := bson.M{"userId": userID, "slotId": slotId}
+	update := bson.M{
+		"$set": bson.M{
+			"result": result,
+		},
+	}
+	_, err := r.collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		fmt.Println("Error updating game history:", err)
+		return err
+	}
+	return nil
 }
