@@ -30,22 +30,16 @@ func (ui *UI) ShowUserDashboard() {
 
 		switch choice {
 		case "1":
-			fmt.Println("Redirecting to Game Room...")
 			ui.ShowGameRoom() // Placeholder function, implement as needed
 		case "2":
-			fmt.Println("Viewing Pending Invites...")
 			ui.ViewPendingInvites() // Placeholder function, implement as needed
 		case "3":
-			fmt.Println("Viewing Leaderboard...")
 			ui.ViewLeaderboard() // Placeholder function, implement as needed
 		case "4":
-			fmt.Println("Redirecting to update results screen")
 			ui.UpdateResults()
 		case "5":
-			fmt.Println("View Upcoming Bookings...")
 			ui.ViewUpcomingBookings()
 		case "6":
-			fmt.Println("Viewing Profile...")
 			ui.ViewProfile()
 		case "7":
 			fmt.Println("Logging out...")

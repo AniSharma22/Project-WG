@@ -26,8 +26,8 @@ func (ui *UI) ViewPendingInvites() {
 	fmt.Println("You have the following pending invites:")
 	for i, invite := range invites {
 		fmt.Printf(" %d️⃣  %s\n", i+1, invite.GameName)
-		fmt.Printf("   🗓️  Date: %s\n", invite.Date)
-		fmt.Printf("   🕒  Time: %s - %s\n", invite.StartTime, invite.EndTime)
+		fmt.Printf("   🗓️  Date: %s\n", invite.Date.Format("2001-01-01"))
+		fmt.Printf("   🕒  Time: %s - %s\n", invite.StartTime.Format("03:04 PM"), invite.EndTime.Format("03:04 PM"))
 		fmt.Println("   👥  Participants:")
 		for _, user := range invite.BookedUsers {
 			fmt.Printf("    - %s\n", user)
@@ -36,10 +36,13 @@ func (ui *UI) ViewPendingInvites() {
 	}
 
 	// Ask the user to choose an invite by number
-	fmt.Print("Enter the number of the invite you want to respond to: ")
+	fmt.Print("Enter the number of the invite you want to respond to (0 to go back): ")
 	choiceStr, _ := ui.reader.ReadString('\n')
 	choiceStr = strings.TrimSpace(choiceStr)
 	choice, err := strconv.Atoi(choiceStr)
+	if choice == 0 {
+		return
+	}
 	if err != nil || choice < 1 || choice > len(invites) {
 		fmt.Println("❌ Invalid choice. Please enter a valid number.")
 		return

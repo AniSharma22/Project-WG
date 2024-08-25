@@ -3,12 +3,13 @@ package utils
 import (
 	"bytes"
 	"fmt"
-	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"math"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
 	"time"
+
+	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // GetUuid generates a new random UUID and returns it as a string
@@ -30,6 +31,12 @@ func GetGameScore(totalWins, totalLosses, totalGames int) float32 {
 	return calculateScore(totalWins, totalLosses, totalGames)
 }
 
+func calculateScore(totalWins, totalLosses, totalGames int) float32 {
+	var winLossRatio float32 = float32(totalWins) / float32(totalLosses)
+	var gameFactor float32 = float32(1) + float32(math.Sqrt(float64(totalGames)))
+	return (winLossRatio * gameFactor) / 100
+}
+
 func GetNameFromEmail(email string) string {
 	var name bytes.Buffer
 	for i := 0; i < len(email); i++ {
@@ -42,12 +49,6 @@ func GetNameFromEmail(email string) string {
 		}
 	}
 	return name.String()
-}
-
-func calculateScore(totalWins, totalLosses, totalGames int) float32 {
-	var winLossRatio float32 = float32(totalWins) / float32(totalLosses)
-	var gameFactor float32 = float32(1) + float32(math.Sqrt(float64(totalGames)))
-	return (winLossRatio * gameFactor) / 100
 }
 
 func InsertAllSlots(slotRepo interfaces.SlotRepository, gameRepo interfaces.GameRepository) error {

@@ -4,15 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"project2/internal/config"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
 	"project2/pkg/globals"
 	"project2/pkg/utils"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type userRepo struct {
@@ -98,15 +99,27 @@ func (r *userRepo) EmailAlreadyExists(email string) error {
 }
 
 func (r *userRepo) AddWin(userId primitive.ObjectID) error {
-	filter := bson.D{{"_id", userId}}
+	// Retrieve the current user stats
+	var user entities.User
+	err := r.collection.FindOne(context.Background(), bson.D{{Key: "_id", Value: userId}}).Decode(&user)
+	if err != nil {
+		fmt.Println("Error fetching user data:", err)
+		return err
+	}
+
+	// Calculate new score
+	newScore := utils.GetTotalScore(user.Wins+1, user.Losses)
+
+	// Update the user's stats
+	filter := bson.D{{Key: "_id", Value: userId}}
 	update := bson.D{
-		{"$inc", bson.D{
-			{"wins", 1},
-			{"overallScore", utils.GetTotalScore(1, 0)}, // Pass wins and losses for total score calculation
+		{Key: "$inc", Value: bson.D{
+			{Key: "wins", Value: 1},
+			{Key: "overallScore", Value: newScore - user.OverallScore},
 		}},
 	}
 
-	_, err := r.collection.UpdateOne(context.Background(), filter, update)
+	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		fmt.Println("Error updating user wins:", err)
 		return err
@@ -115,15 +128,27 @@ func (r *userRepo) AddWin(userId primitive.ObjectID) error {
 }
 
 func (r *userRepo) AddLoss(userId primitive.ObjectID) error {
-	filter := bson.D{{"_id", userId}}
+	// Retrieve the current user stats
+	var user entities.User
+	err := r.collection.FindOne(context.Background(), bson.D{{Key: "_id", Value: userId}}).Decode(&user)
+	if err != nil {
+		fmt.Println("Error fetching user data:", err)
+		return err
+	}
+
+	// Calculate new score
+	newScore := utils.GetTotalScore(user.Wins, user.Losses+1)
+
+	// Update the user's stats
+	filter := bson.D{{Key: "_id", Value: userId}}
 	update := bson.D{
-		{"$inc", bson.D{
-			{"losses", 1},
-			{"overallScore", utils.GetTotalScore(0, 1)}, // Pass wins and losses for total score calculation
+		{Key: "$inc", Value: bson.D{
+			{Key: "losses", Value: 1},
+			{Key: "overallScore", Value: newScore - user.OverallScore}, // Adjust overallScore based on new calculation
 		}},
 	}
 
-	_, err := r.collection.UpdateOne(context.Background(), filter, update)
+	_, err = r.collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		fmt.Println("Error updating user losses:", err)
 		return err

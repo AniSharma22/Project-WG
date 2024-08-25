@@ -12,7 +12,7 @@ type User struct {
 	Gender       string               `bson:"gender"`
 	Wins         int                  `bson:"wins"`
 	Losses       int                  `bson:"losses"`
-	OverallScore int                  `bson:"overallScore"`
+	OverallScore float32              `bson:"overallScore"`
 	InvitedSlots []primitive.ObjectID `bson:"invitedSlots"`
 	Role         string               `bson:"role"`
 }

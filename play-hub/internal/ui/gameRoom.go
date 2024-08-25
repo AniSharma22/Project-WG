@@ -12,25 +12,25 @@ func (ui *UI) ShowGameRoom() {
 	// Retrieve all games from the game service
 	games, err := ui.gameService.GetAllGames()
 	if err != nil {
-		fmt.Println("Error fetching games:", err)
+		fmt.Println("❌ Error fetching games:", err)
 		return
 	}
 
 	// Display the list of games to the user
-	fmt.Println("Available Games:")
+	fmt.Println("🎮 Available Games:")
 	for i, game := range games {
 		fmt.Printf("%d. %s\n", i+1, game.Name)
 	}
 	// Add an option to go back
-	fmt.Printf("%d. Go Back\n", len(games)+1)
+	fmt.Printf("%d. 🔙 Go Back\n", len(games)+1)
 
 	// Prompt the user to select a game or go back
 	var choice int
 	for {
-		fmt.Print("Select an option by entering the corresponding number: ")
+		fmt.Print("👉 Select an option by entering the corresponding number: ")
 		input, err := ui.reader.ReadString('\n')
 		if err != nil {
-			fmt.Println("Error reading input:", err)
+			fmt.Println("❌ Error reading input:", err)
 			continue
 		}
 
@@ -40,7 +40,7 @@ func (ui *UI) ShowGameRoom() {
 		// Convert the input to an integer
 		choice, err = strconv.Atoi(input)
 		if err != nil || choice < 1 || choice > len(games)+1 {
-			fmt.Println("Invalid input. Please enter a number corresponding to an option.")
+			fmt.Println("❗ Invalid input. Please enter a number corresponding to an option.")
 		} else {
 			break
 		}
@@ -60,23 +60,23 @@ func (ui *UI) ShowGameRoom() {
 
 // HandleSelectedGame displays all slots for the selected game and handles the user's selection.
 func (ui *UI) HandleSelectedGame(game *entities.Game) {
-	fmt.Printf("You selected: %s\n", game.Name)
+	fmt.Printf("✔️ You selected: %s\n", game.Name)
 
 	// Retrieve all slots for the selected game
 	slots, err := ui.slotService.GetGameSlots(game)
 	if err != nil {
-		fmt.Println("Error fetching slots:", err)
+		fmt.Println("❌ Error fetching slots:", err)
 		return
 	}
 
 	// Check if there are any available slots
 	if len(slots) == 0 {
-		fmt.Println("No slots available for this game.")
+		fmt.Println("⚠️ No slots available for this game.")
 		return
 	}
 
 	// Display the list of available slots to the user
-	fmt.Println("Available Slots:")
+	fmt.Println("🕒 Available Slots:")
 	for i, slot := range slots {
 		fmt.Printf("%d. %s to %s\n", i+1, slot.StartTime.Format("03:04 PM"), slot.EndTime.Format("03:04 PM"))
 	}
@@ -84,10 +84,10 @@ func (ui *UI) HandleSelectedGame(game *entities.Game) {
 	// Prompt the user to select a slot
 	var choice int
 	for {
-		fmt.Print("Select a slot by entering the corresponding number: ")
+		fmt.Print("👉 Select a slot by entering the corresponding number: ")
 		input, err := ui.reader.ReadString('\n')
 		if err != nil {
-			fmt.Println("Error reading input:", err)
+			fmt.Println("❌ Error reading input:", err)
 			continue
 		}
 
@@ -97,7 +97,7 @@ func (ui *UI) HandleSelectedGame(game *entities.Game) {
 		// Convert the input to an integer
 		choice, err = strconv.Atoi(input)
 		if err != nil || choice < 1 || choice > len(slots) {
-			fmt.Println("Invalid input. Please enter a number corresponding to a slot.")
+			fmt.Println("❗ Invalid input. Please enter a number corresponding to a slot.")
 		} else {
 			break
 		}
@@ -113,19 +113,19 @@ func (ui *UI) HandleSelectedGame(game *entities.Game) {
 // HandleSelectedSlot processes the selected game and slot entities.
 func (ui *UI) HandleSelectedSlot(game *entities.Game, slot *entities.Slot) {
 	// Display the selected slot's time and game name
-	fmt.Printf("\nSlot Details:\n")
-	fmt.Printf("Game: %s\n", game.Name)
-	fmt.Printf("Slot Time: %s to %s\n", slot.StartTime.Format("03:04 PM"), slot.EndTime.Format("03:04 PM"))
+	fmt.Printf("\n📅 Slot Details:\n")
+	fmt.Printf("🎮 Game: %s\n", game.Name)
+	fmt.Printf("⏰ Slot Time: %s to %s\n", slot.StartTime.Format("03:04 PM"), slot.EndTime.Format("03:04 PM"))
 
 	// Display booked users
 	if len(slot.BookedUsers) == 0 {
-		fmt.Println("Booked Users: None")
+		fmt.Println("🚫 Booked Users: None")
 	} else {
-		fmt.Println("Booked Users:")
+		fmt.Println("👥 Booked Users:")
 		for _, userID := range slot.BookedUsers {
 			user, err := ui.userService.GetUserById(userID)
 			if err != nil {
-				fmt.Printf("- Error fetching user ID %s: %v\n", userID.Hex(), err)
+				fmt.Printf("- ❌ Error fetching user ID %s: %v\n", userID.Hex(), err)
 			} else {
 				fmt.Printf("- %s (User ID: %s)\n", utils.GetNameFromEmail(user.Email), userID.Hex())
 			}
@@ -134,32 +134,32 @@ func (ui *UI) HandleSelectedSlot(game *entities.Game, slot *entities.Slot) {
 
 	// Display results (winners and losers)
 	if len(slot.Results) == 0 {
-		fmt.Println("Results: No results recorded for this slot yet.")
+		fmt.Println("⚖️ Results: No results recorded for this slot yet.")
 	} else {
-		fmt.Println("Results:")
+		fmt.Println("🏅 Results:")
 		for _, result := range slot.Results {
 			user, _ := ui.userService.GetUserById(result.UserID)
 			if result.Result == "winner" {
-				fmt.Printf("- %s (User ID: %s) winner\n", utils.GetNameFromEmail(user.Email), result.UserID)
+				fmt.Printf("- 🏆 %s (User ID: %s) winner\n", utils.GetNameFromEmail(user.Email), result.UserID)
 			} else {
-				fmt.Printf("- %s (User ID: %s) loser\n", utils.GetNameFromEmail(user.Email), result.UserID)
+				fmt.Printf("- ❌ %s (User ID: %s) loser\n", utils.GetNameFromEmail(user.Email), result.UserID)
 			}
 		}
 	}
 
 	// Show options to the user
-	fmt.Println("\nOptions:")
-	fmt.Println("1. Book in this slot")
-	fmt.Println("2. Invite to this slot")
-	fmt.Println("3. Go back")
+	fmt.Println("\n🔧 Options:")
+	fmt.Println("1. ✅ Book in this slot")
+	fmt.Println("2. ✉️ Invite to this slot")
+	fmt.Println("3. 🔙 Go back")
 
 	// Handle user input
 	var choice int
 	for {
-		fmt.Print("Select an option by entering the corresponding number: ")
+		fmt.Print("👉 Select an option by entering the corresponding number: ")
 		input, err := ui.reader.ReadString('\n')
 		if err != nil {
-			fmt.Println("Error reading input:", err)
+			fmt.Println("❌ Error reading input:", err)
 			continue
 		}
 
@@ -169,7 +169,7 @@ func (ui *UI) HandleSelectedSlot(game *entities.Game, slot *entities.Slot) {
 		// Convert the input to an integer
 		choice, err = strconv.Atoi(input)
 		if err != nil || choice < 1 || choice > 3 {
-			fmt.Println("Invalid input. Please enter a number between 1 and 3.")
+			fmt.Println("❗ Invalid input. Please enter a number between 1 and 3.")
 		} else {
 			break
 		}
@@ -180,14 +180,15 @@ func (ui *UI) HandleSelectedSlot(game *entities.Game, slot *entities.Slot) {
 	case 1:
 		err := ui.slotService.BookSlot(game, slot)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("❌", err)
 			return
 		}
+		fmt.Println("🎉 Slot booked successfully!")
 	case 2:
-		fmt.Print("Enter the email of the user you want to invite to the slot: ")
+		fmt.Print("✉️ Enter the email of the user you want to invite to the slot: ")
 		email, err := ui.reader.ReadString('\n')
 		if err != nil {
-			fmt.Println("Error reading email:", err)
+			fmt.Println("❌ Error reading email:", err)
 			return
 		}
 
@@ -197,18 +198,18 @@ func (ui *UI) HandleSelectedSlot(game *entities.Game, slot *entities.Slot) {
 		// Assuming you have a method to find the user by email
 		user, err := ui.userService.GetUserByEmail(email)
 		if err != nil {
-			fmt.Println("User not found or error retrieving user:", err)
+			fmt.Println("❌ User not found or error retrieving user:", err)
 			return
 		}
 
 		// Now pass the game, slot, and user ID to the InviteToSlot method
 		err = ui.slotService.InviteToSlot(user.ID, game, slot)
 		if err != nil {
-			fmt.Println("Error inviting user to slot:", err)
+			fmt.Println("❌ Error inviting user to slot:", err)
 			return
 		}
 
-		fmt.Println("User invited to slot successfully.")
+		fmt.Println("✉️ User invited to slot successfully!")
 
 	case 3:
 		ui.ShowGameRoom()

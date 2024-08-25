@@ -150,6 +150,6 @@ func (ui *UI) ViewUserStats() {
 	fmt.Printf("Phone Number: %v\n", user.PhoneNo)
 	fmt.Printf("Role: %s\n", user.Role)
 	fmt.Printf("Games Played: %d\n", user.Wins+user.Losses)
-	fmt.Printf("Score: %d\n", user.OverallScore)
+	fmt.Printf("Score: %.2f\n", user.OverallScore)
 
 }
