@@ -27,12 +27,14 @@ func GetTotalScore(totalWins, totalLosses int) float32 {
 	return calculateScore(totalWins, totalLosses, totalGames)
 }
 
-func GetGameScore(totalWins, totalLosses, totalGames int) float32 {
-	return calculateScore(totalWins, totalLosses, totalGames)
-}
-
 func calculateScore(totalWins, totalLosses, totalGames int) float32 {
-	var winLossRatio float32 = float32(totalWins) / float32(totalLosses)
+	var winLossRatio float32
+	if totalLosses == 0 {
+		winLossRatio = float32(totalWins) // If no losses, the ratio is just the total wins
+	} else {
+		winLossRatio = float32(totalWins) / float32(totalLosses)
+	}
+
 	var gameFactor float32 = float32(1) + float32(math.Sqrt(float64(totalGames)))
 	return (winLossRatio * gameFactor) / 100
 }

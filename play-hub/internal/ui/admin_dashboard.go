@@ -1,20 +1,25 @@
 package ui
 
 import (
-	"bufio"
 	"fmt"
 	"strings"
 )
 
 func (ui *UI) ShowAdminDashboard() {
 	for {
-		fmt.Println("\nAdmin Dashboard")
-		fmt.Println("1. Create a Game")
-		fmt.Println("2. Delete a Game")
-		fmt.Println("3. View User Stats")
-		fmt.Println("4. Logout")
+		fmt.Println("\033[1;35m") // Purple bold
+		fmt.Println("╔═════════════════════════════════════╗")
+		fmt.Println("║          🎮 Admin Dashboard 🎮      ║")
+		fmt.Println("╚═════════════════════════════════════╝")
+		fmt.Println("\033[0m") // Reset color
 
-		fmt.Print("Enter your choice: ")
+		fmt.Println("1. 🆕 Create a Game")
+		fmt.Println("2. 🗑️ Delete a Game")
+		fmt.Println("3. 📊 View User Stats")
+		fmt.Println("4. 🚪 Logout")
+
+		fmt.Print("\nEnter your choice: ")
+
 		input, _ := ui.reader.ReadString('\n')
 		input = strings.TrimSpace(input)
 
@@ -26,10 +31,12 @@ func (ui *UI) ShowAdminDashboard() {
 		case "3":
 			ui.ViewUserStats()
 		case "4":
-			fmt.Println("Logging out...")
+			fmt.Println("\nLogging out... 👋")
 			return
 		default:
-			fmt.Println("Invalid choice. Please enter a number between 1 and 4.")
+			fmt.Println("\033[1;31m") // Red bold
+			fmt.Println("❌ Invalid choice. Please enter a number between 1 and 4.")
+			fmt.Println("\033[0m") // Reset color
 		}
 	}
 }
@@ -37,6 +44,10 @@ func (ui *UI) ShowAdminDashboard() {
 func (ui *UI) CreateGame() {
 	var gameName string
 	var maxPlayers int
+
+	fmt.Println("\033[1;34m") // Blue bold
+	fmt.Println("\n🎮 Create a New Game")
+	fmt.Println("\033[0m") // Reset color
 
 	// Get game name
 	for {
@@ -46,7 +57,9 @@ func (ui *UI) CreateGame() {
 		if gameName != "" {
 			break
 		} else {
-			fmt.Println("Game name cannot be empty. Please enter a valid name.")
+			fmt.Println("\033[1;31m") // Red bold
+			fmt.Println("❌ Game name cannot be empty. Please enter a valid name.")
+			fmt.Println("\033[0m") // Reset color
 		}
 	}
 
@@ -57,7 +70,9 @@ func (ui *UI) CreateGame() {
 		input = strings.TrimSpace(input)
 		_, err := fmt.Sscanf(input, "%d", &maxPlayers)
 		if err != nil || maxPlayers <= 0 {
-			fmt.Println("Invalid number of players. Please enter a positive integer.")
+			fmt.Println("\033[1;31m") // Red bold
+			fmt.Println("❌ Invalid number of players. Please enter a positive integer.")
+			fmt.Println("\033[0m") // Reset color
 		} else {
 			break
 		}
@@ -65,45 +80,48 @@ func (ui *UI) CreateGame() {
 
 	err := ui.gameService.CreateGame(gameName, maxPlayers)
 	if err != nil {
-		fmt.Printf("Error creating game: %v\n", err)
+		fmt.Printf("\033[1;31m❌ Error creating game: %v\033[0m\n", err)
 		return
 	}
 
-	fmt.Println("Game created successfully!")
+	fmt.Println("\033[1;32m") // Green bold
+	fmt.Println("✅ Game created successfully!")
+	fmt.Println("\033[0m") // Reset color
 }
 
 func (ui *UI) DeleteGame() {
-	fmt.Println("Deleting a game...")
+	fmt.Println("\033[1;31m") // Red bold
+	fmt.Println("\n🗑️ Deleting a Game...")
+	fmt.Println("\033[0m") // Reset color
 
 	// Fetch all games
 	games, err := ui.gameService.GetAllGames()
 	if err != nil {
-		fmt.Printf("Error retrieving games: %v\n", err)
+		fmt.Printf("\033[1;31m❌ Error retrieving games: %v\033[0m\n", err)
 		return
 	}
 
 	// Check if there are any games
 	if len(games) == 0 {
-		fmt.Println("No games available to delete.")
+		fmt.Println("\033[1;33m⚠️ No games available to delete.\033[0m")
 		return
 	}
 
 	// Display the list of games
-	fmt.Println("Available games:")
+	fmt.Println("\033[1;34mAvailable games:\033[0m")
 	for i, game := range games {
 		fmt.Printf("%d. %s (Max Players: %d)\n", i+1, game.Name, game.MaxCapacity)
 	}
 
 	// Ask the user to choose a game to delete
-	reader := bufio.NewReader(ui.reader)
 	var choice int
 	for {
 		fmt.Print("Enter the number corresponding to the game you want to delete: ")
-		input, _ := reader.ReadString('\n')
+		input, _ := ui.reader.ReadString('\n')
 		input = strings.TrimSpace(input)
 		_, err := fmt.Sscanf(input, "%d", &choice)
 		if err != nil || choice < 1 || choice > len(games) {
-			fmt.Println("Invalid choice. Please enter a valid number.")
+			fmt.Println("\033[1;31m❌ Invalid choice. Please enter a valid number.\033[0m")
 		} else {
 			break
 		}
@@ -113,15 +131,19 @@ func (ui *UI) DeleteGame() {
 	selectedGame := games[choice-1]
 	err = ui.gameService.DeleteGame(selectedGame.ID)
 	if err != nil {
-		fmt.Printf("Error deleting game: %v\n", err)
+		fmt.Printf("\033[1;31m❌ Error deleting game: %v\033[0m\n", err)
 		return
 	}
 
-	fmt.Println("Game deleted successfully!")
+	fmt.Println("\033[1;32m") // Green bold
+	fmt.Println("✅ Game deleted successfully!")
+	fmt.Println("\033[0m") // Reset color
 }
 
 func (ui *UI) ViewUserStats() {
-	fmt.Println("Viewing user stats...")
+	fmt.Println("\033[1;34m") // Blue bold
+	fmt.Println("\n📊 Viewing User Stats...")
+	fmt.Println("\033[0m") // Reset color
 
 	// Get the user's email ID
 	var email string
@@ -132,24 +154,25 @@ func (ui *UI) ViewUserStats() {
 		if email != "" {
 			break
 		} else {
-			fmt.Println("Email ID cannot be empty. Please enter a valid email ID.")
+			fmt.Println("\033[1;31m") // Red bold
+			fmt.Println("❌ Email ID cannot be empty. Please enter a valid email ID.")
+			fmt.Println("\033[0m") // Reset color
 		}
 	}
 
 	// Retrieve user by email
 	user, err := ui.userService.GetUserByEmail(email)
 	if err != nil {
-		fmt.Printf("Error retrieving user stats: %v\n", err)
+		fmt.Printf("\033[1;31m❌ Error retrieving user stats: %v\033[0m\n", err)
 		return
 	}
 
-	// Display user stats (assuming user has some stats fields to display)
-	fmt.Printf("User Stats")
-	fmt.Printf("Email: %s\n", user.Email)
-	fmt.Printf("Gender: %v\n", user.Gender)
-	fmt.Printf("Phone Number: %v\n", user.PhoneNo)
-	fmt.Printf("Role: %s\n", user.Role)
-	fmt.Printf("Games Played: %d\n", user.Wins+user.Losses)
-	fmt.Printf("Score: %.2f\n", user.OverallScore)
-
+	// Display user stats
+	fmt.Println("\033[1;32mUser Stats\033[0m")
+	fmt.Printf("📧 Email: %s\n", user.Email)
+	fmt.Printf("👤 Gender: %v\n", user.Gender)
+	fmt.Printf("📞 Phone Number: %v\n", user.PhoneNo)
+	fmt.Printf("🎖️ Role: %s\n", user.Role)
+	fmt.Printf("🎮 Games Played: %d\n", user.Wins+user.Losses)
+	fmt.Printf("🏆 Score: %.2f\n", user.OverallScore)
 }

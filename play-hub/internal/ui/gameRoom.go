@@ -139,10 +139,10 @@ func (ui *UI) HandleSelectedSlot(game *entities.Game, slot *entities.Slot) {
 		fmt.Println("🏅 Results:")
 		for _, result := range slot.Results {
 			user, _ := ui.userService.GetUserById(result.UserID)
-			if result.Result == "winner" {
+			if result.Result == "win" {
 				fmt.Printf("- 🏆 %s (User ID: %s) winner\n", utils.GetNameFromEmail(user.Email), result.UserID)
 			} else {
-				fmt.Printf("- ❌ %s (User ID: %s) loser\n", utils.GetNameFromEmail(user.Email), result.UserID)
+				fmt.Printf("-   %s (User ID: %s) loser\n", utils.GetNameFromEmail(user.Email), result.UserID)
 			}
 		}
 	}

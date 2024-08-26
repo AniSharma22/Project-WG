@@ -236,11 +236,14 @@ func (r *userRepo) DeleteInvite(slotId primitive.ObjectID) error {
 func (r *userRepo) GetAllUsersByScore() ([]entities.User, error) {
 	var users []entities.User
 
+	// Define the filter to only include users with the role "user"
+	filter := bson.M{"role": "user"}
+
 	// Define the sort filter to sort by OverallScore in descending order
 	opts := options.Find().SetSort(bson.M{"overallScore": -1})
 
-	// Perform the find operation with the sort options
-	cursor, err := r.collection.Find(context.Background(), bson.M{}, opts)
+	// Perform the find operation with the filter and sort options
+	cursor, err := r.collection.Find(context.Background(), filter, opts)
 	if err != nil {
 		return nil, err
 	}
