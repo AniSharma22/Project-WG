@@ -1,11 +1,14 @@
 package services
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"fmt"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
 	"project2/pkg/globals"
 	"sync"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type GameHistoryService struct {
@@ -34,12 +37,41 @@ func (gh *GameHistoryService) GetTotalGameHistory() ([]entities.GameHistory, err
 }
 
 func (gh *GameHistoryService) GetResultsToUpdate() ([]entities.GameHistory, error) {
+	// Retrieve the active user by email
 	user, err := gh.userService.GetUserByEmail(globals.ActiveUser)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error retrieving user by email: %w", err)
 	}
 
-	return gh.gameHistoryRepo.GetResultsToUpdate(user.ID)
+	// Get the current time
+	now := time.Now()
+
+	// Fetch game histories that need updating for the user
+	gameHistories, err := gh.gameHistoryRepo.GetResultsToUpdate(user.ID)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching game histories: %w", err)
+	}
+
+	// Initialize a slice to hold game histories that need updates
+	var resultsToUpdate []entities.GameHistory
+
+	// Iterate over the fetched game histories
+	for _, gameHistory := range gameHistories {
+		// Retrieve the slot associated with the game history
+		slot, err := gh.SlotService.GetSlotById(gameHistory.SlotID)
+		if err != nil {
+			// Log the error but continue processing other game histories
+			continue
+		}
+
+		// Check if the current time is before the slot's end time
+		if now.After(slot.EndTime) {
+			resultsToUpdate = append(resultsToUpdate, gameHistory)
+		}
+	}
+
+	// Return the list of game histories that need updates
+	return resultsToUpdate, nil
 }
 
 func (gh *GameHistoryService) UpdateResult(result string, slotId primitive.ObjectID) error {
@@ -61,36 +93,3 @@ func (gh *GameHistoryService) UpdateResult(result string, slotId primitive.Objec
 	}
 	return nil
 }
-
-//func (r *GameHistoryService) AddResult(result *entities.Result) error {
-//	result.ResultId, _ = utils.GetUuid()
-//	for _, user := range result.WinningUser {
-//		err := r.userService.AddWinToUser(&user, result.GameId)
-//		if err != nil {
-//			return err
-//		}
-//	}
-//	for _, user := range result.LosingUser {
-//		err := r.userService.AddLossToUser(&user, result.GameId)
-//		if err != nil {
-//			return err
-//		}
-//	}
-//	return r.resultRepo.AddResult(result)
-//}
-//
-//func (r *GameHistoryService) GetResult(resultId string) (*entities.Result, error) {
-//	result := r.resultRepo.FindResult(resultId)
-//	if result == nil {
-//		return nil, errors.New("result not found")
-//	}
-//	return result, nil
-//}
-//func (r *GameHistoryService) GetAllResults() ([]*entities.Result, error) {
-//	results := r.resultRepo.GetAllResults()
-//	if results == nil {
-//		return nil, errors.New("no result found")
-//	}
-//	return results, nil
-//}
-//

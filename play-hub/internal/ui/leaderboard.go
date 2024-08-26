@@ -2,9 +2,10 @@ package ui
 
 import (
 	"fmt"
-	"github.com/olekukonko/tablewriter"
 	"os"
 	"project2/pkg/utils"
+
+	"github.com/olekukonko/tablewriter"
 )
 
 func (ui *UI) ViewLeaderboard() {
@@ -35,7 +36,7 @@ func (ui *UI) ViewLeaderboard() {
 		table.Append([]string{
 			fmt.Sprintf("#%d", rank),
 			name,
-			fmt.Sprintf("%d", score),
+			fmt.Sprintf("%.2f", score),
 		})
 	}
 

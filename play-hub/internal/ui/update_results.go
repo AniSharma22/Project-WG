@@ -10,7 +10,7 @@ import (
 )
 
 func (ui *UI) UpdateResults() {
-	fmt.Println("\n=============================== Results to Update ===============================\n")
+	fmt.Println("\n=============================== Results to Update ===============================")
 
 	gameHistoryList, err := ui.gameHistoryService.GetResultsToUpdate()
 	if err != nil {
@@ -71,7 +71,7 @@ func (ui *UI) UpdateResults() {
 	resultInput = strings.TrimSpace(strings.ToUpper(resultInput))
 
 	switch resultInput {
-	case "w":
+	case "W":
 		// Update the result as a win
 		err := ui.gameHistoryService.UpdateResult("win", selectedGameHistory.SlotID)
 		if err != nil {
@@ -79,7 +79,7 @@ func (ui *UI) UpdateResults() {
 		} else {
 			fmt.Println("Result updated to Win!")
 		}
-	case "l":
+	case "L":
 		// Update the result as a loss
 		err := ui.gameHistoryService.UpdateResult("loss", selectedGameHistory.SlotID)
 		if err != nil {

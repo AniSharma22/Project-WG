@@ -4,14 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"project2/internal/config"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
 	"project2/pkg/globals"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type slotRepo struct {
@@ -131,10 +132,10 @@ func (r *slotRepo) GetUpcomingBookedSlots(userId primitive.ObjectID) ([]entities
 		return nil, err
 	}
 
-	for _, slot := range slots {
-		slot.StartTime = slot.StartTime.In(globals.IstLocation)
-		slot.EndTime = slot.EndTime.In(globals.IstLocation)
-		slot.Date = slot.Date.In(globals.IstLocation)
+	for i, _ := range slots {
+		slots[i].StartTime = slots[i].StartTime.In(globals.IstLocation)
+		slots[i].EndTime = slots[i].EndTime.In(globals.IstLocation)
+		slots[i].Date = slots[i].Date.In(globals.IstLocation)
 	}
 
 	return slots, nil

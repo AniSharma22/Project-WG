@@ -7,7 +7,7 @@ import (
 )
 
 func (ui *UI) ViewUpcomingBookings() {
-	fmt.Println("\n=============================== Your Upcoming Bookings ===============================\n")
+	fmt.Println("\n=============================== Your Upcoming Bookings ===============================")
 
 	slots, err := ui.slotService.GetUpcomingBookedSlots()
 	if err != nil {
@@ -43,5 +43,5 @@ func (ui *UI) ViewUpcomingBookings() {
 		}
 	}
 
-	fmt.Println("\n======================================================================================\n")
+	fmt.Println("\n======================================================================================")
 }
