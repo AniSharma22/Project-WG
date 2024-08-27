@@ -8,11 +8,11 @@ import (
 
 type LeaderboardService struct {
 	leaderBoardRepo interfaces.LeaderboardRepository
-	userService     *UserService
+	userService     interfaces.UserService
 	leaderboardWG   *sync.WaitGroup
 }
 
-func NewLeaderboardService(leaderBoardRepo interfaces.LeaderboardRepository, userService *UserService) *LeaderboardService {
+func NewLeaderboardService(leaderBoardRepo interfaces.LeaderboardRepository, userService interfaces.UserService) interfaces.LeaderboardService {
 	return &LeaderboardService{
 		leaderBoardRepo: leaderBoardRepo,
 		userService:     userService,
@@ -23,16 +23,3 @@ func NewLeaderboardService(leaderBoardRepo interfaces.LeaderboardRepository, use
 func (s *LeaderboardService) GetOverallLeaderboard() ([]entities.User, error) {
 	return s.userService.GetAllUsersByScore()
 }
-
-//
-//func (s *LeaderboardService) GetGameLeaderboard(gameId string) []entities.User {
-//	users := s.userService.GetAllUsers()
-//	if len(users) == 0 {
-//		return nil
-//	}
-//	gameLeaderboard, err := s.leaderBoardRepo.GetGameLeaderboard(gameId, users)
-//	if err != nil {
-//		return nil
-//	}
-//	return gameLeaderboard
-//}

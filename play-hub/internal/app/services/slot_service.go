@@ -17,7 +17,7 @@ type SlotService struct {
 	gameHistoryRepo interfaces.GameHistoryRepository
 }
 
-func NewSlotService(slotRepo interfaces.SlotRepository, userRepo interfaces.UserRepository, gameHistoryRepo interfaces.GameHistoryRepository) *SlotService {
+func NewSlotService(slotRepo interfaces.SlotRepository, userRepo interfaces.UserRepository, gameHistoryRepo interfaces.GameHistoryRepository) interfaces.SlotService {
 	return &SlotService{
 		slotRepo:        slotRepo,
 		userRepo:        userRepo,

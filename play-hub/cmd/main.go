@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -57,7 +58,8 @@ func main() {
 	}()
 
 	// Set up the UI with all services
-	appUI := ui.NewUI(userService, gameService, slotService, gameHistoryService, leaderboardService, notificationService)
+
+	appUI := ui.NewUI(userService, gameService, slotService, gameHistoryService, leaderboardService, notificationService, bufio.NewReader(os.Stdin))
 
 	appUI.ShowMainMenu()
 }

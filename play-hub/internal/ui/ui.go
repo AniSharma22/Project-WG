@@ -2,23 +2,22 @@ package ui
 
 import (
 	"bufio"
-	"os"
-	"project2/internal/app/services"
+	"project2/internal/domain/interfaces"
 )
 
 // UI struct holds the UserService, bufio.Reader, and other dependencies
 type UI struct {
-	userService         *services.UserService
-	gameService         *services.GameService
-	slotService         *services.SlotService
-	gameHistoryService  *services.GameHistoryService
-	leaderboardService  *services.LeaderboardService
-	notificationService *services.NotificationService
+	userService         interfaces.UserService
+	gameService         interfaces.GameService
+	slotService         interfaces.SlotService
+	gameHistoryService  interfaces.GameHistoryService
+	leaderboardService  interfaces.LeaderboardService
+	notificationService interfaces.NotificationService
 	reader              *bufio.Reader
 }
 
 // NewUI initializes the UI with the provided services and a bufio.Reader
-func NewUI(userService *services.UserService, gameService *services.GameService, slotService *services.SlotService, gameHistoryService *services.GameHistoryService, leaderboardService *services.LeaderboardService, notificationService *services.NotificationService) *UI {
+func NewUI(userService interfaces.UserService, gameService interfaces.GameService, slotService interfaces.SlotService, gameHistoryService interfaces.GameHistoryService, leaderboardService interfaces.LeaderboardService, notificationService interfaces.NotificationService, reader *bufio.Reader) *UI {
 	return &UI{
 		userService:         userService,
 		gameService:         gameService,
@@ -26,6 +25,6 @@ func NewUI(userService *services.UserService, gameService *services.GameService,
 		gameHistoryService:  gameHistoryService,
 		leaderboardService:  leaderboardService,
 		notificationService: notificationService,
-		reader:              bufio.NewReader(os.Stdin), // Initialize the reader to read from standard input
+		reader:              reader,
 	}
 }

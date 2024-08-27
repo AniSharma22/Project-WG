@@ -14,12 +14,12 @@ import (
 
 type UserService struct {
 	userRepo    interfaces.UserRepository
-	SlotService *SlotService
-	GameService *GameService
+	SlotService interfaces.SlotService
+	GameService interfaces.GameService
 	userWG      *sync.WaitGroup
 }
 
-func NewUserService(userRepo interfaces.UserRepository, slotService *SlotService, gameService *GameService) *UserService {
+func NewUserService(userRepo interfaces.UserRepository, slotService interfaces.SlotService, gameService interfaces.GameService) interfaces.UserService {
 	return &UserService{
 		userRepo:    userRepo,
 		SlotService: slotService,
@@ -96,7 +96,7 @@ func (s *UserService) GetPendingInvites() ([]models.Invite, error) {
 				return nil, err
 			}
 		} else {
-			// Add valid invite to the list by creating a invite object
+			// Add valid invite to the list by creating an invitation object
 			inviteToAdd := models.Invite{
 				SlotId: slot.ID,
 				GameName: func() string {

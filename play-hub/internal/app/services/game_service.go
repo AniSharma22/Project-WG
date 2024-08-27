@@ -12,7 +12,7 @@ type GameService struct {
 	gameWG   *sync.WaitGroup
 }
 
-func NewGameService(gameRepo interfaces.GameRepository) *GameService {
+func NewGameService(gameRepo interfaces.GameRepository) interfaces.GameService {
 	return &GameService{
 		gameRepo: gameRepo,
 		gameWG:   &sync.WaitGroup{},

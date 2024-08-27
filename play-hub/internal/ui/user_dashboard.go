@@ -7,9 +7,12 @@ import (
 
 func (ui *UI) ShowUserDashboard() {
 	for {
-		fmt.Println("===================================")
-		fmt.Println("          User Dashboard           ")
-		fmt.Println("===================================")
+		fmt.Println("\033[1;33m") // Yellow bold (close to orange)
+		fmt.Println("╔═════════════════════════════════════╗")
+		fmt.Println("║          🎮 User Dashboard 🎮       ║")
+		fmt.Println("╚═════════════════════════════════════╝")
+		fmt.Println("\033[0m") // Reset color
+
 		fmt.Println("Please choose an option:")
 		fmt.Println("1. Game Room")
 		fmt.Println("2. View Pending Invites")
@@ -19,7 +22,7 @@ func (ui *UI) ShowUserDashboard() {
 		fmt.Println("6. View Profile")
 		fmt.Println("7. Logout")
 
-		fmt.Print("Enter your choice (1-5): ")
+		fmt.Print("Enter your choice (1-7): ")
 		choice, err := ui.reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("Error reading input:", err)

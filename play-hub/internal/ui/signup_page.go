@@ -27,6 +27,7 @@ func (ui *UI) ShowSignupPage() {
 
 	// Get and confirm password
 	for {
+		fmt.Println("(1 Capital, 1 small, 1 special character with min 8 length)")
 		fmt.Print("Enter your password: ")
 		bytePassword1, err := terminal.ReadPassword(int(syscall.Stdin))
 		if err != nil {

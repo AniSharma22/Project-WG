@@ -13,12 +13,12 @@ import (
 
 type GameHistoryService struct {
 	gameHistoryRepo interfaces.GameHistoryRepository
-	userService     *UserService
-	SlotService     *SlotService
+	userService     interfaces.UserService
+	SlotService     interfaces.SlotService
 	gameHistoryWG   *sync.WaitGroup
 }
 
-func NewGameHistoryService(gameHistoryRepo interfaces.GameHistoryRepository, userService *UserService, slotService *SlotService) *GameHistoryService {
+func NewGameHistoryService(gameHistoryRepo interfaces.GameHistoryRepository, userService interfaces.UserService, slotService interfaces.SlotService) interfaces.GameHistoryService {
 	return &GameHistoryService{
 		gameHistoryRepo: gameHistoryRepo,
 		userService:     userService,
