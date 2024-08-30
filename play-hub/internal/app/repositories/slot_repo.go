@@ -19,9 +19,9 @@ type slotRepo struct {
 	collection *mongo.Collection
 }
 
-func NewSlotRepo() interfaces.SlotRepository {
+func NewSlotRepo(client *mongo.Client) interfaces.SlotRepository {
 	return &slotRepo{
-		collection: globals.Client.Database(config.DBName).Collection("Slots"),
+		collection: client.Database(config.DB.DBName).Collection(config.DB.SlotsCollection),
 	}
 }
 

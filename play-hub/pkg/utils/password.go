@@ -2,7 +2,6 @@ package utils
 
 import (
 	"golang.org/x/crypto/bcrypt"
-	"unicode"
 )
 
 func GetHashedPassword(password []byte) (string, error) {
@@ -19,23 +18,23 @@ func VerifyPassword(password []byte, hash string) bool {
 	return err == nil
 }
 
-func IsValidPassword(password string) bool {
-	var hasUpper, hasLower, hasSpecial bool
-
-	if len(password) < 8 {
-		return false
-	}
-
-	for _, char := range password {
-		switch {
-		case unicode.IsUpper(char):
-			hasUpper = true
-		case unicode.IsLower(char):
-			hasLower = true
-		case unicode.IsPunct(char) || unicode.IsSymbol(char):
-			hasSpecial = true
-		}
-	}
-
-	return hasUpper && hasLower && hasSpecial
-}
+//func IsValidPassword(password string) bool {
+//	var hasUpper, hasLower, hasSpecial bool
+//
+//	if len(password) < 8 {
+//		return false
+//	}
+//
+//	for _, char := range password {
+//		switch {
+//		case unicode.IsUpper(char):
+//			hasUpper = true
+//		case unicode.IsLower(char):
+//			hasLower = true
+//		case unicode.IsPunct(char) || unicode.IsSymbol(char):
+//			hasSpecial = true
+//		}
+//	}
+//
+//	return hasUpper && hasLower && hasSpecial
+//}

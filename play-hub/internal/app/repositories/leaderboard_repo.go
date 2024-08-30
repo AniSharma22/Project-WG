@@ -9,16 +9,15 @@ import (
 	"project2/internal/config"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
-	"project2/pkg/globals"
 )
 
 type leaderboardRepo struct {
 	collection *mongo.Collection
 }
 
-func NewLeaderboardRepo() interfaces.LeaderboardRepository {
+func NewLeaderboardRepo(client *mongo.Client) interfaces.LeaderboardRepository {
 	return &leaderboardRepo{
-		collection: globals.Client.Database(config.DBName).Collection("Leaderboards"),
+		collection: client.Database(config.DB.DBName).Collection(config.DB.LeaderboardsCollection),
 	}
 }
 

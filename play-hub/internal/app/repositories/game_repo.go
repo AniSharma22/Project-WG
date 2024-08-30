@@ -10,16 +10,15 @@ import (
 	"project2/internal/config"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
-	"project2/pkg/globals"
 )
 
 type gameRepo struct {
 	collection *mongo.Collection
 }
 
-func NewGameRepo() interfaces.GameRepository {
+func NewGameRepo(client *mongo.Client) interfaces.GameRepository {
 	return &gameRepo{
-		collection: globals.Client.Database(config.DBName).Collection("Games"),
+		collection: client.Database(config.DB.DBName).Collection(config.DB.GamesCollection),
 	}
 }
 

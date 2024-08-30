@@ -44,6 +44,8 @@ func (ui *UI) ShowSignupPage() {
 
 		if string(bytePassword1) != string(bytePassword2) {
 			fmt.Println("Passwords did not match. Please try again.")
+		} else if !validation.IsValidPassword(string(bytePassword1)) {
+			fmt.Println("Password complexity not met!")
 		} else {
 			password, _ = utils.GetHashedPassword(bytePassword1)
 			break

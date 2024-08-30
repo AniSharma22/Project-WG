@@ -2,10 +2,14 @@ package ui
 
 import (
 	"fmt"
+	"github.com/fatih/color"
+	"github.com/olekukonko/tablewriter"
+	"os"
 	"project2/internal/domain/entities"
 	"project2/pkg/utils"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func (ui *UI) ShowGameRoom() {
@@ -74,12 +78,27 @@ func (ui *UI) HandleSelectedGame(game *entities.Game) {
 		fmt.Println("⚠️ No slots available for this game.")
 		return
 	}
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetAutoWrapText(false)
+	table.SetHeader([]string{"S.No", "Slot Timings"})
 
 	// Display the list of available slots to the user
 	fmt.Println("🕒 Available Slots:")
 	for i, slot := range slots {
-		fmt.Printf("%d. %s to %s\n", i+1, slot.StartTime.Format("03:04 PM"), slot.EndTime.Format("03:04 PM"))
+		if time.Now().After(slot.StartTime) {
+			table.Append([]string{
+				color.New(color.FgRed).Sprintf("#%d", i+1),
+				color.New(color.FgRed).Sprintf("%s - %s", slot.StartTime.Format("03:04 PM"), slot.EndTime.Format("03:04 PM")),
+			})
+		} else {
+			table.Append([]string{
+				color.New(color.FgBlue).Sprintf("#%d", i+1),
+				color.New(color.FgBlue).Sprintf("%s - %s", slot.StartTime.Format("03:04 PM"), slot.EndTime.Format("03:04 PM")),
+			})
+		}
 	}
+
+	table.Render()
 
 	// Prompt the user to select a slot
 	var choice int

@@ -5,37 +5,12 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"project2/internal/app/services"
 	"project2/internal/domain/entities"
-	"project2/internal/domain/interfaces"
-	mock_interfaces "project2/tests/mocks/repository"
-	mock_service "project2/tests/mocks/service"
+	"project2/internal/models"
+	"project2/pkg/globals"
 	"testing"
+	"time"
 )
-
-var (
-	ctrl         *gomock.Controller
-	mockUserRepo *mock_interfaces.MockUserRepository
-	userService  interfaces.UserService
-)
-
-func setup(t *testing.T) func() {
-	// Set up the gomock controller
-	ctrl = gomock.NewController(t)
-
-	// Create a mock UserRepository
-	mockUserRepo = mock_interfaces.NewMockUserRepository(ctrl)
-
-	// Initialize the UserService with the mock repository
-	slotService := mock_service.NewMockSlotService()
-	gameService := mock_service.NewMockGameService()
-	userService = services.NewUserService(mockUserRepo, slotService, gameService)
-
-	// Return a cleanup function to be called at the end of the test
-	return func() {
-		ctrl.Finish()
-	}
-}
 
 func TestUserService_Signup(t *testing.T) {
 	tests := []struct {
@@ -141,7 +116,7 @@ func TestUserService_Login(t *testing.T) {
 			password: []byte("TestPassword"),
 			mockUser: &entities.User{
 				Email:    "test@example.com",
-				Password: "$2a$14$7NcnNTGL5l0GyjnYloyWQeWc9wT82T3SoKgpNE38xiYGotmnsPH", // Assumes the password check is internal
+				Password: "$2a$14$UrwH7llst0N6/k0NkdHktub1zWCosEYzFpkIX8.mJF87BNEZ3LkUu", // Assumes the password check is internal
 			},
 			mockRepoError: nil,
 			expectedError: false,
@@ -279,150 +254,224 @@ func TestUserService_GetUserByEmail(t *testing.T) {
 	}
 }
 
-//func TestUserService_GetPendingInvites(t *testing.T) {
-//	now := time.Now()
-//	slotId := primitive.NewObjectID()
-//	invite := models.Invite{
-//		SlotId: slotId,
-//	}
-//
-//	tests := []struct {
-//		name            string
-//		mockInvites     []models.Invite
-//		mockSlot        *entities.Slot
-//		mockGame        *entities.Game
-//		mockRepoError   error
-//		expectedError   bool
-//		expectedInvites []models.Invite
-//	}{
-//		{
-//			name: "Successful Retrieval",
-//			mockInvites: []models.Invite{
-//				invite,
-//			},
-//			mockSlot: &entities.Slot{
-//				ID:        slotId,
-//				StartTime: now.Add(1 * time.Hour),
-//			},
-//			mockGame: &entities.Game{
-//				ID:   primitive.NewObjectID(),
-//				Name: "Test Game",
-//			},
-//			mockRepoError: nil,
-//			expectedError: false,
-//			expectedInvites: []models.Invite{
-//				{
-//					SlotId:      slotId,
-//					GameName:    "Test Game",
-//					Date:        time.Now().Truncate(24 * time.Hour),
-//					StartTime:   now.Add(1 * time.Hour).Format("15:04"),
-//					EndTime:     now.Add(1 * time.Hour).Add(20 * time.Minute).Format("15:04"),
-//					BookedUsers: []string{},
-//				},
-//			},
-//		},
-//		{
-//			name:            "Slot Retrieval Error",
-//			mockInvites:     []models.Invite{invite},
-//			mockSlot:        nil,
-//			mockGame:        nil,
-//			mockRepoError:   errors.New("slot not found"),
-//			expectedError:   true,
-//			expectedInvites: nil,
-//		},
-//	}
-//
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			teardown := setup(t)
-//			defer teardown()
-//
-//			for _, invite := range tt.mockInvites {
-//				mockUserRepo.EXPECT().GetPendingInvites(globals.ActiveUser).Return(tt.mockInvites, tt.mockRepoError).Times(1)
-//				if tt.mockSlot != nil {
-//					mockSlotService.EXPECT().GetSlotById(invite.SlotId).Return(tt.mockSlot, nil).Times(1)
-//				}
-//				if tt.mockGame != nil {
-//					mockGameService.EXPECT().GetGameByID(tt.mockSlot.GameID).Return(tt.mockGame, nil).Times(1)
-//				}
-//			}
-//
-//			invites, err := userService.GetPendingInvites()
-//
-//			if tt.expectedError {
-//				assert.Error(t, err)
-//			} else {
-//				assert.NoError(t, err)
-//				assert.ElementsMatch(t, tt.expectedInvites, invites)
-//			}
-//		})
-//	}
-//}
+func TestUserService_GetPendingInvites(t *testing.T) {
+	slotId := primitive.NewObjectID()
+	gameId := primitive.NewObjectID()
+	date := time.Now()
+	startTime := time.Now().Add(2 * time.Hour)
+	endTime := time.Now().Add(2*time.Hour + 20*time.Minute)
 
-//func TestUserService_AcceptInvite(t *testing.T) {
-//	slotId := primitive.NewObjectID()
-//
-//	tests := []struct {
-//		name          string
-//		mockSlot      *entities.Slot
-//		mockGame      *entities.Game
-//		mockRepoError error
-//		expectedError bool
-//	}{
-//		{
-//			name: "Successful Acceptance",
-//			mockSlot: &entities.Slot{
-//				ID:          slotId,
-//				GameID:      primitive.NewObjectID(),
-//				BookedUsers: []primitive.ObjectID{},
-//			},
-//			mockGame: &entities.Game{
-//				ID:   primitive.NewObjectID(),
-//				Name: "Test Game",
-//			},
-//			mockRepoError: nil,
-//			expectedError: false,
-//		},
-//		{
-//			name:          "Slot Retrieval Error",
-//			mockSlot:      nil,
-//			mockGame:      nil,
-//			mockRepoError: errors.New("slot not found"),
-//			expectedError: true,
-//		},
-//		{
-//			name:          "Game Retrieval Error",
-//			mockSlot:      &entities.Slot{ID: slotId},
-//			mockGame:      nil,
-//			mockRepoError: errors.New("game not found"),
-//			expectedError: true,
-//		},
-//	}
-//
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			teardown := setup(t)
-//			defer teardown()
-//
-//			mockSlotService.EXPECT().GetSlotById(slotId).Return(tt.mockSlot, nil).Times(1)
-//			if tt.mockSlot != nil {
-//				mockGameService.EXPECT().GetGameByID(tt.mockSlot.GameID).Return(tt.mockGame, nil).Times(1)
-//			}
-//			if tt.mockSlot != nil && tt.mockGame != nil {
-//				mockSlotService.EXPECT().BookSlot(tt.mockGame, tt.mockSlot).Return(nil).Times(1)
-//			}
-//			mockUserRepo.EXPECT().DeleteInvite(slotId).Return(tt.mockRepoError).Times(1)
-//
-//			err := userService.AcceptInvite(slotId)
-//
-//			if tt.expectedError {
-//				assert.Error(t, err)
-//			} else {
-//				assert.NoError(t, err)
-//			}
-//		})
-//	}
-//}
+	tests := []struct {
+		name            string
+		mockInvites     []primitive.ObjectID
+		mockSlot        *entities.Slot
+		mockGame        *entities.Game
+		mockRepoError   error
+		expectedError   bool
+		expectedInvites []models.Invite
+	}{
+		{
+			name: "Successful Retrieval",
+			mockInvites: []primitive.ObjectID{
+				slotId,
+			},
+			mockSlot: &entities.Slot{
+				ID:        slotId,
+				GameID:    gameId,
+				Date:      date,
+				StartTime: startTime,
+				EndTime:   endTime,
+			},
+			mockGame: &entities.Game{
+				ID:   gameId,
+				Name: "Test Game",
+			},
+			mockRepoError: nil,
+			expectedError: false,
+			expectedInvites: []models.Invite{
+				{
+					SlotId:      slotId,
+					GameName:    "Test Game",
+					Date:        date,
+					StartTime:   startTime,
+					EndTime:     endTime,
+					BookedUsers: []string{},
+				},
+			},
+		},
+		{
+			name:            "Slot Retrieval Error",
+			mockInvites:     []primitive.ObjectID{slotId},
+			mockSlot:        nil,
+			mockGame:        nil,
+			mockRepoError:   errors.New("slot not found"),
+			expectedError:   true,
+			expectedInvites: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			teardown := setup(t)
+			defer teardown()
+
+			// Set up the expectation for GetPendingInvites
+			mockUserRepo.EXPECT().GetPendingInvites(globals.ActiveUser).Return(tt.mockInvites, tt.mockRepoError).Times(1)
+
+			if tt.mockRepoError == nil {
+				mockSlotService.EXPECT().GetSlotById(slotId).Return(tt.mockSlot, nil).Times(1)
+				mockGameService.EXPECT().GetGameByID(tt.mockSlot.GameID).Return(tt.mockGame, nil).Times(1)
+			}
+
+			// Call the method under test
+			invites, err := userService.GetPendingInvites()
+
+			// Assert results based on expectations
+			if tt.expectedError {
+				assert.Error(t, err)
+				assert.Nil(t, invites)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expectedInvites[0].SlotId, invites[0].SlotId)
+				assert.Equal(t, tt.expectedInvites[0].GameName, invites[0].GameName)
+			}
+		})
+	}
+}
+
+func TestUserService_AcceptInvite(t *testing.T) {
+	slotId := primitive.NewObjectID()
+
+	tests := []struct {
+		name                   string
+		mockSlotRetrievalError error
+		mockSlot               *entities.Slot
+		mockGameRetrievalError error
+		mockGame               *entities.Game
+		mockBookSlotError      error
+		mockUserRepoError      error
+		expectedError          bool
+	}{
+		{
+			name:                   "Successful Acceptance",
+			mockSlotRetrievalError: nil,
+			mockSlot: &entities.Slot{
+				ID:     slotId,
+				GameID: primitive.NewObjectID(),
+			},
+			mockGameRetrievalError: nil,
+			mockGame: &entities.Game{
+				ID:   primitive.NewObjectID(),
+				Name: "Test Game",
+			},
+			mockBookSlotError: nil,
+			mockUserRepoError: nil,
+			expectedError:     false,
+		},
+		{
+			name:                   "Slot Retrieval Error",
+			mockSlotRetrievalError: errors.New("slot not found"),
+			mockSlot:               nil,
+			mockGameRetrievalError: nil,
+			mockGame:               nil,
+			mockBookSlotError:      nil,
+			mockUserRepoError:      nil,
+			expectedError:          true,
+		},
+		{
+			name:                   "Game Retrieval Error",
+			mockSlotRetrievalError: nil,
+			mockSlot: &entities.Slot{
+				ID:     slotId,
+				GameID: primitive.NewObjectID(),
+			},
+			mockGameRetrievalError: errors.New("game not found"),
+			mockGame:               nil,
+			mockBookSlotError:      nil,
+			mockUserRepoError:      nil,
+			expectedError:          true,
+		},
+		{
+			name:                   "Booking Slot Error",
+			mockSlotRetrievalError: nil,
+			mockSlot: &entities.Slot{
+				ID:     slotId,
+				GameID: primitive.NewObjectID(),
+			},
+			mockGameRetrievalError: nil,
+			mockGame: &entities.Game{
+				ID:   primitive.NewObjectID(),
+				Name: "Test Game",
+			},
+			mockBookSlotError: errors.New("slot booking error"),
+			mockUserRepoError: nil,
+			expectedError:     true,
+		},
+		{
+			name:                   "Delete Invite Error",
+			mockSlotRetrievalError: nil,
+			mockSlot: &entities.Slot{
+				ID:     slotId,
+				GameID: primitive.NewObjectID(),
+			},
+			mockGameRetrievalError: nil,
+			mockGame: &entities.Game{
+				ID:   primitive.NewObjectID(),
+				Name: "Test Game",
+			},
+			mockBookSlotError: nil,
+			mockUserRepoError: errors.New("delete invite error"),
+			expectedError:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			teardown := setup(t)
+			defer teardown()
+
+			// Mock Slot Retrieval
+			mockSlotService.EXPECT().
+				GetSlotById(slotId).
+				Return(tt.mockSlot, tt.mockSlotRetrievalError).
+				Times(1)
+
+			// Only mock Game Retrieval if Slot Retrieval is successful
+			if tt.mockSlotRetrievalError == nil && tt.mockSlot != nil {
+				mockGameService.EXPECT().
+					GetGameByID(tt.mockSlot.GameID).
+					Return(tt.mockGame, tt.mockGameRetrievalError).
+					Times(1)
+			}
+
+			// Only mock BookSlot if both Slot and Game Retrievals are successful
+			if tt.mockSlotRetrievalError == nil && tt.mockSlot != nil && tt.mockGameRetrievalError == nil && tt.mockGame != nil {
+				mockSlotService.EXPECT().
+					BookSlot(tt.mockGame, tt.mockSlot).
+					Return(tt.mockBookSlotError).
+					Times(1)
+			}
+
+			// Only mock DeleteInvite if Slot booking is successful
+			if tt.mockSlotRetrievalError == nil && tt.mockSlot != nil &&
+				tt.mockGameRetrievalError == nil && tt.mockGame != nil &&
+				tt.mockBookSlotError == nil {
+				mockUserRepo.EXPECT().
+					DeleteInvite(slotId).
+					Return(tt.mockUserRepoError).
+					Times(1)
+			}
+
+			err := userService.AcceptInvite(slotId)
+
+			if tt.expectedError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
 
 func TestUserService_RejectInvite(t *testing.T) {
 	slotId := primitive.NewObjectID()

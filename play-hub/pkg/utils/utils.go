@@ -8,19 +8,8 @@ import (
 	"project2/internal/domain/interfaces"
 	"time"
 
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
-
-// GetUuid generates a new random UUID and returns it as a string
-func GetUuid() (string, error) {
-	// Generate a new UUID
-	u, err := uuid.NewUUID()
-	if err != nil {
-		return "", err
-	}
-	return u.String(), nil
-}
 
 func GetTotalScore(totalWins, totalLosses int) float32 {
 	totalGames := totalWins + totalLosses

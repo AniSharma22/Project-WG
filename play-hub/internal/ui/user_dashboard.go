@@ -33,11 +33,11 @@ func (ui *UI) ShowUserDashboard() {
 
 		switch choice {
 		case "1":
-			ui.ShowGameRoom() // Placeholder function, implement as needed
+			ui.ShowGameRoom()
 		case "2":
-			ui.ViewPendingInvites() // Placeholder function, implement as needed
+			ui.ViewPendingInvites()
 		case "3":
-			ui.ViewLeaderboard() // Placeholder function, implement as needed
+			ui.ViewLeaderboard()
 		case "4":
 			ui.UpdateResults()
 		case "5":

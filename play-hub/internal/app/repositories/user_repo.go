@@ -20,9 +20,9 @@ type userRepo struct {
 	collection *mongo.Collection
 }
 
-func NewUserRepo() interfaces.UserRepository {
+func NewUserRepo(client *mongo.Client) interfaces.UserRepository {
 	return &userRepo{
-		collection: globals.Client.Database(config.DBName).Collection("Users"),
+		collection: client.Database(config.DB.DBName).Collection(config.DB.UsersCollection),
 	}
 }
 

@@ -127,6 +127,7 @@ func (s *UserService) AcceptInvite(slotId primitive.ObjectID) error {
 	if err != nil {
 		return err
 	}
+
 	game, err := s.GameService.GetGameByID(slot.GameID)
 	if err != nil {
 		return err

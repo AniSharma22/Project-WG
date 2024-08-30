@@ -8,7 +8,6 @@ import (
 	"project2/internal/config"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
-	"project2/pkg/globals"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,9 +18,9 @@ type gameHistoryRepo struct {
 	collection *mongo.Collection
 }
 
-func NewGameHistoryRepo() interfaces.GameHistoryRepository {
+func NewGameHistoryRepo(client *mongo.Client) interfaces.GameHistoryRepository {
 	return &gameHistoryRepo{
-		collection: globals.Client.Database(config.DBName).Collection("GameHistory"),
+		collection: client.Database(config.DB.DBName).Collection(config.DB.GameHistoryCollection),
 	}
 }
 

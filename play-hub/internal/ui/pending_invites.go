@@ -35,7 +35,7 @@ func (ui *UI) ViewPendingInvites() {
 		fmt.Println()
 	}
 
-	// Ask the user to choose an invite by number
+	// Ask the user to choose an invitation by number
 	fmt.Print("Enter the number of the invite you want to respond to (0 to go back): ")
 	choiceStr, _ := ui.reader.ReadString('\n')
 	choiceStr = strings.TrimSpace(choiceStr)

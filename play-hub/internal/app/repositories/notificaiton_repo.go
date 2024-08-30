@@ -9,16 +9,15 @@ import (
 	"project2/internal/config"
 	"project2/internal/domain/entities"
 	"project2/internal/domain/interfaces"
-	"project2/pkg/globals"
 )
 
 type notificationRepo struct {
 	collection *mongo.Collection
 }
 
-func NewNotificationRepo() interfaces.NotificationRepository {
+func NewNotificationRepo(client *mongo.Client) interfaces.NotificationRepository {
 	return &notificationRepo{
-		collection: globals.Client.Database(config.DBName).Collection("Notifications"),
+		collection: client.Database(config.DB.DBName).Collection(config.DB.NotificationsCollection),
 	}
 }
 
