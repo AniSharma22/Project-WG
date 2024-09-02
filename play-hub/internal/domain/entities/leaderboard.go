@@ -1,13 +1,16 @@
 package entities
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/google/uuid"
+	"time"
 )
 
 type Leaderboard struct {
-	ID     primitive.ObjectID `bson:"_id,omitempty"`
-	GameID primitive.ObjectID `bson:"gameId"`
-	UserID primitive.ObjectID `bson:"userId"`
-	Score  float64            `bson:"score"`
-	Rank   int                `bson:"rank"`
+	ScoreID   uuid.UUID `json:"score_id" db:"score_id"`
+	UserID    uuid.UUID `json:"user_id" db:"user_id"`
+	GameID    uuid.UUID `json:"game_id" db:"game_id"`
+	Wins      int       `json:"wins" db:"wins"`
+	Losses    int       `json:"losses" db:"losses"`
+	Score     float64   `json:"score" db:"score"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }

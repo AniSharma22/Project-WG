@@ -4,6 +4,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"project2/internal/app/services"
 	"project2/internal/domain/interfaces"
+	"project2/internal/domain/interfaces/service"
 	mock_interfaces "project2/tests/mocks/repository"
 	mock_services "project2/tests/mocks/service"
 	"testing"
@@ -22,12 +23,12 @@ var (
 	mockGameHistoryService  *mock_services.MockGameHistoryService
 	mockLeaderboardService  *mock_services.MockLeaderboardService
 	mockNotificationService *mock_services.MockNotificationService
-	userService             interfaces.UserService
-	slotService             interfaces.SlotService
-	gameService             interfaces.GameService
+	userService             service.UserService
+	slotService             service.SlotService
+	gameService             service.GameService
 	gameHistoryService      interfaces.GameHistoryService
-	leaderboardService      interfaces.LeaderboardService
-	notificationService     interfaces.NotificationService
+	leaderboardService      service.LeaderboardService
+	notificationService     service.NotificationService
 )
 
 func setup(t *testing.T) func() {

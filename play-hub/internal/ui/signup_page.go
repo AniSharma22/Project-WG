@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"context"
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
 	"project2/internal/domain/entities"
@@ -18,7 +19,7 @@ func (ui *UI) ShowSignupPage() {
 		fmt.Print("Enter your email: ")
 		email, _ = ui.reader.ReadString('\n')
 		email = strings.TrimSpace(email)
-		if validation.IsValidEmail(email) && ui.userService.EmailAlreadyExists(email) {
+		if validation.IsValidEmail(email) && !ui.userService.EmailAlreadyRegistered(context.Background(), email) {
 			break
 		} else {
 			fmt.Println("Invalid email. Please try again.")
@@ -78,14 +79,14 @@ func (ui *UI) ShowSignupPage() {
 
 	// Create the user entity
 	user := entities.User{
-		Email:    email,
-		Password: password,
-		PhoneNo:  phoneNo,
-		Gender:   gender,
+		Email:        email,
+		Password:     password,
+		MobileNumber: phoneNo,
+		Gender:       gender,
 	}
 
 	// Sign up the user
-	if err := ui.userService.Signup(&user); err != nil {
+	if err := ui.userService.Signup(context.Background(), &user); err != nil {
 		fmt.Println(err)
 		return
 	}

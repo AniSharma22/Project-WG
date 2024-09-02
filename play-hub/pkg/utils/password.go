@@ -5,11 +5,8 @@ import (
 )
 
 func GetHashedPassword(password []byte) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword(password, 14)
-	if err != nil {
-		return "", err
-	}
-	return string(bytes), nil
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
 }
 
 // VerifyPassword verifies if the given password matches the stored hash.

@@ -1,10 +1,7 @@
 package globals
 
 import (
-	"go.mongodb.org/mongo-driver/mongo"
-	"time"
+	"github.com/google/uuid"
 )
 
-var ActiveUser string
-var Client *mongo.Client
-var IstLocation *time.Location
+var ActiveUser uuid.UUID

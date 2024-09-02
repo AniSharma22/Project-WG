@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"context"
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
 	"project2/pkg/validation"
@@ -35,7 +36,7 @@ func (ui *UI) ShowLoginPage() {
 	password = bytePassword
 	fmt.Println() // Add a newline after password input
 
-	user, err := ui.userService.Login(email, password)
+	user, err := ui.userService.Login(context.Background(), email, password)
 	if err != nil {
 		fmt.Println("Error logging in:", err)
 		return

@@ -2,9 +2,10 @@ package ui
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
-	"project2/pkg/utils"
+	"project2/pkg/globals"
 	"strconv"
 	"strings"
 )
@@ -12,7 +13,7 @@ import (
 func (ui *UI) UpdateResults() {
 	fmt.Println("\n=============================== Results to Update ===============================")
 
-	gameHistoryList, err := ui.gameHistoryService.GetResultsToUpdate()
+	gameHistoryList, err := ui.bookingService.GetBookingsToUpdateResult(context.Background(), globals.ActiveUser)
 	if err != nil {
 		fmt.Printf("Error retrieving results: %v\n", err)
 		return
@@ -24,19 +25,18 @@ func (ui *UI) UpdateResults() {
 	}
 
 	for i, gameHistory := range gameHistoryList {
-		game, _ := ui.gameService.GetGameByID(gameHistory.GameID)
-		slot, _ := ui.slotService.GetSlotById(gameHistory.SlotID)
+		//game, _ := ui.gameService.GetGameByID(gameHistory.GameID)
+		//slot, _ := ui.slotService.GetSlotById(gameHistory.SlotID)
 
 		fmt.Printf(" #%d\n", i+1)
-		fmt.Printf("Game:         %s\n", game.Name)
-		fmt.Printf("Start Time:   %s IST\n", slot.StartTime.Format("03:04 PM"))
-		fmt.Printf("End Time:     %s IST\n", slot.EndTime.Format("03:04 PM"))
+		fmt.Printf("Game:         %s\n", gameHistory.GameName)
+		fmt.Printf("Start Time:   %s IST\n", gameHistory.StartTime.Format("03:04 PM"))
+		fmt.Printf("End Time:     %s IST\n", gameHistory.EndTime.Format("03:04 PM"))
 
-		if len(slot.BookedUsers) > 0 {
+		if len(gameHistory.BookedUsers) > 0 {
 			fmt.Println("Participants:")
-			for _, userID := range slot.BookedUsers {
-				user, _ := ui.userService.GetUserById(userID)
-				fmt.Printf("- %s\n", utils.GetNameFromEmail(user.Email))
+			for _, userName := range gameHistory.BookedUsers {
+				fmt.Printf("- %s\n", userName)
 			}
 		} else {
 			fmt.Println("Participants: None")
@@ -64,7 +64,7 @@ func (ui *UI) UpdateResults() {
 
 	// Confirm the selection and prompt for result update
 	selectedGameHistory := gameHistoryList[index]
-	fmt.Printf("Selected Game: %s\n", selectedGameHistory.GameID.Hex())
+	fmt.Printf("Selected Game: %s\n", selectedGameHistory.BookingId)
 	fmt.Println("Press 'w' for Win or 'l' for Loss:")
 
 	resultInput, _ := reader.ReadString('\n')
@@ -73,7 +73,7 @@ func (ui *UI) UpdateResults() {
 	switch resultInput {
 	case "W":
 		// Update the result as a win
-		err := ui.gameHistoryService.UpdateResult("win", selectedGameHistory.SlotID)
+		err := ui.bookingService.UpdateBookingResult(context.Background(), selectedGameHistory.BookingId, "win")
 		if err != nil {
 			fmt.Printf("Error updating result: %v\n", err)
 		} else {
@@ -81,7 +81,7 @@ func (ui *UI) UpdateResults() {
 		}
 	case "L":
 		// Update the result as a loss
-		err := ui.gameHistoryService.UpdateResult("loss", selectedGameHistory.SlotID)
+		err := ui.bookingService.UpdateBookingResult(context.Background(), selectedGameHistory.BookingId, "loss")
 		if err != nil {
 			fmt.Printf("Error updating result: %v\n", err)
 		} else {

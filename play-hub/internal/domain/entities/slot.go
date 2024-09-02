@@ -1,21 +1,16 @@
 package entities
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/google/uuid"
 	"time"
 )
 
-type Result struct {
-	UserID primitive.ObjectID `bson:"userId"`
-	Result string             `bson:"result"`
-}
-
 type Slot struct {
-	ID          primitive.ObjectID   `bson:"_id,omitempty"`
-	GameID      primitive.ObjectID   `bson:"gameId"`
-	Date        time.Time            `bson:"date"`
-	StartTime   time.Time            `bson:"startTime"`
-	EndTime     time.Time            `bson:"endTime"`
-	BookedUsers []primitive.ObjectID `bson:"bookedUsers"`
-	Results     []Result             `bson:"results"`
+	SlotID    uuid.UUID `json:"slot_id" db:"slot_id"`
+	GameID    uuid.UUID `json:"game_id" db:"game_id"`
+	Date      time.Time `json:"slot_date" db:"slot_date"`
+	StartTime time.Time `json:"start_time" db:"start_time"`
+	EndTime   time.Time `json:"end_time" db:"end_time"`
+	IsBooked  bool      `json:"is_booked" db:"is_booked"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }

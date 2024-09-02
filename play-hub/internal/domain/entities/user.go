@@ -1,18 +1,18 @@
 package entities
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/google/uuid"
+	"time"
 )
 
 type User struct {
-	ID           primitive.ObjectID   `bson:"_id,omitempty"`
-	Email        string               `bson:"email"`
-	Password     string               `bson:"password"`
-	PhoneNo      string               `bson:"phoneNumber"`
-	Gender       string               `bson:"gender"`
-	Wins         int                  `bson:"wins"`
-	Losses       int                  `bson:"losses"`
-	OverallScore float32              `bson:"overallScore"`
-	InvitedSlots []primitive.ObjectID `bson:"invitedSlots"`
-	Role         string               `bson:"role"`
+	UserID       uuid.UUID `json:"user_id" db:"user_id"`
+	Username     string    `json:"username" db:"username"`
+	Email        string    `json:"email" db:"email"`
+	Password     string    `json:"password" db:"password"`
+	MobileNumber string    `json:"mobile_number,omitempty" db:"mobile_number"`
+	Gender       string    `json:"gender" db:"gender"`
+	Role         string    `json:"role" db:"role"`
+	CreatedAt    time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
 }

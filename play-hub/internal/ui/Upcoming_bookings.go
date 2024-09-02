@@ -1,44 +1,44 @@
 package ui
 
 import (
+	"context"
 	"fmt"
-	"project2/pkg/utils"
+	"project2/pkg/globals"
 	"strings"
 )
 
 func (ui *UI) ViewUpcomingBookings() {
 	fmt.Println("\n=============================== Your Upcoming Bookings ===============================")
 
-	slots, err := ui.slotService.GetUpcomingBookedSlots()
+	bookings, err := ui.bookingService.GetUpcomingBookings(context.Background(), globals.ActiveUser)
 	if err != nil {
 		fmt.Printf("Error retrieving bookings: %v\n", err)
 		return
 	}
 
-	if len(slots) == 0 {
+	if len(bookings) == 0 {
 		fmt.Println("You have no upcoming bookings.")
 		return
 	}
 
-	for i, slot := range slots {
-		game, _ := ui.gameService.GetGameByID(slot.GameID)
+	for i, booking := range bookings {
+		//game, _ := ui.gameService.GetGameByID(slot.GameID)
 
 		fmt.Printf("Booking #%d\n", i+1)
-		fmt.Printf("Game:         %s\n", game.Name)
-		fmt.Printf("Start Time:   %s IST\n", slot.StartTime.Format("03:04 PM"))
-		fmt.Printf("End Time:     %s IST\n", slot.EndTime.Format("03:04 PM"))
+		fmt.Printf("Game:         %s\n", booking.GameName)
+		fmt.Printf("Start Time:   %s IST\n", booking.StartTime.Format("03:04 PM"))
+		fmt.Printf("End Time:     %s IST\n", booking.EndTime.Format("03:04 PM"))
 
-		if len(slot.BookedUsers) > 0 {
+		if len(booking.BookedUsers) > 0 {
 			fmt.Println("Participants: ")
-			for _, userID := range slot.BookedUsers {
-				user, _ := ui.userService.GetUserById(userID)
-				fmt.Printf("- %s\n", utils.GetNameFromEmail(user.Email))
+			for _, name := range booking.BookedUsers {
+				fmt.Printf("- %s\n", name)
 			}
 		} else {
 			fmt.Println("Participants: None")
 		}
 
-		if i < len(slots)-1 {
+		if i < len(bookings)-1 {
 			fmt.Println(strings.Repeat("-", 80))
 		}
 	}
