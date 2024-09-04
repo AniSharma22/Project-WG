@@ -6,6 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="483178ca-f89f-4d23-bd9f-2476a1e17394" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/../play-hub/scripts/create_tables.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_booking_repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_invitation_repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_notification_repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_booking_service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_invitation_service.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../play-hub/internal/app/services/booking_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/app/services/booking_service.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../play-hub/internal/app/services/game_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/app/services/game_service.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../play-hub/internal/app/services/slot_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/app/services/slot_service.go" afterDir="false" />
@@ -17,16 +22,16 @@
       <change beforePath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/slot_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/slot_repository.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/user_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/user_repository.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_game_history_repository.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_game_repository.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_leaderboard_repository.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_slot_repository.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_user_repository.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_game_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_game_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_leaderboard_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_leaderboard_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_slot_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_slot_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_user_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_user_repository.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_game_history_service.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_game_service.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_leaderboard_service.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_notification_service.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_slot_service.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_user_service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_game_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_game_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_leaderboard_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_leaderboard_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_notification_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_notification_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_slot_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_slot_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_user_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_user_service.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../play-hub/tests/service/game_history_service_test.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../play-hub/tests/service/game_service_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/service/game_service_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../play-hub/tests/service/leaderboard_service_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/service/leaderboard_service_test.go" afterDir="false" />
@@ -39,7 +44,6 @@
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/config/config.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/ui/todo/todo.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/ui/todo/todo.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/json/progress.json" beforeDir="false" afterPath="$PROJECT_DIR$/json/progress.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/json/todos.json" beforeDir="false" afterPath="$PROJECT_DIR$/json/todos.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/json/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/json/users.json" afterDir="false" />
