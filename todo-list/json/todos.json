@@ -1,23 +1,5 @@
 [
   {
-    "username": "pravin",
-    "details": {
-      "todo_list": [],
-      "daily_status": [
-        {
-          "time": "10:50:24",
-          "date": "2024-08-07",
-          "task": "Module 9: Final Project"
-        },
-        {
-          "time": "10:51:20",
-          "date": "2024-08-07",
-          "task": "gym"
-        }
-      ]
-    }
-  },
-  {
     "username": "random",
     "details": {
       "todo_list": [
@@ -101,12 +83,19 @@
   {
     "username": "rahul",
     "details": {
-      "todo_list": [],
+      "todo_list": [
+        "go sleep"
+      ],
       "daily_status": [
         {
           "time": "20:18:35",
           "date": "2024-08-06",
           "task": "gym"
+        },
+        {
+          "time": "21:12:54",
+          "date": "2024-09-02",
+          "task": "eat food"
         }
       ]
     }
@@ -132,6 +121,42 @@
           "time": "12:54:34",
           "date": "2024-08-07",
           "task": "sleep"
+        }
+      ]
+    }
+  },
+  {
+    "username": "anish22",
+    "details": {
+      "todo_list": [],
+      "daily_status": [
+        {
+          "time": "20:11:12",
+          "date": "2024-09-02",
+          "task": "Module 4: Advanced Topics"
+        },
+        {
+          "time": "20:11:20",
+          "date": "2024-09-02",
+          "task": "Module 7: Case Studies"
+        }
+      ]
+    }
+  },
+  {
+    "username": "pravin",
+    "details": {
+      "todo_list": [],
+      "daily_status": [
+        {
+          "time": "10:50:24",
+          "date": "2024-08-07",
+          "task": "Module 9: Final Project"
+        },
+        {
+          "time": "10:51:20",
+          "date": "2024-08-07",
+          "task": "gym"
         }
       ]
     }

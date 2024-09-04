@@ -75,24 +75,3 @@ func (s *GameService) UpdateGameStatus(ctx context.Context, id uuid.UUID, status
 	}
 	return nil
 }
-
-//func (s *GameService) GetGameByID(gameID primitive.ObjectID) (*entities.Game, error) {
-//	return s.gameRepo.GetGameByID(gameID)
-//}
-//
-//func (s *GameService) GetAllGames() ([]entities.Game, error) {
-//	return s.gameRepo.GetAllGames()
-//}
-//
-//func (s *GameService) CreateGame(name string, maxPlayers int) error {
-//	game := entities.Game{
-//		ID:          primitive.NewObjectID(),
-//		Name:        name,
-//		MaxCapacity: maxPlayers,
-//	}
-//	return s.gameRepo.CreateGame(&game)
-//}
-//
-//func (s *GameService) DeleteGame(gameId primitive.ObjectID) error {
-//	return s.gameRepo.DeleteGame(gameId)
-//}

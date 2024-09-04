@@ -1,5 +1,43 @@
 [
   {
+    "username": "anshi",
+    "progress": [
+      {
+        "courseID": 1,
+        "completedSections": [
+          1.1,
+          1.5,
+          1.6
+        ]
+      },
+      {
+        "courseID": 3,
+        "completedSections": [
+          3.1,
+          3.2,
+          3.7,
+          3.9
+        ]
+      },
+      {
+        "courseID": 6,
+        "completedSections": []
+      }
+    ]
+  },
+  {
+    "username": "anish22",
+    "progress": [
+      {
+        "courseID": 1,
+        "completedSections": [
+          1.4,
+          1.7
+        ]
+      }
+    ]
+  },
+  {
     "username": "rahul",
     "progress": [
       {
@@ -78,32 +116,6 @@
           1.1,
           1.2
         ]
-      }
-    ]
-  },
-  {
-    "username": "anshi",
-    "progress": [
-      {
-        "courseID": 1,
-        "completedSections": [
-          1.1,
-          1.5,
-          1.6
-        ]
-      },
-      {
-        "courseID": 3,
-        "completedSections": [
-          3.1,
-          3.2,
-          3.7,
-          3.9
-        ]
-      },
-      {
-        "courseID": 6,
-        "completedSections": []
       }
     ]
   }

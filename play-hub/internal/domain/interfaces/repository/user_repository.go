@@ -13,13 +13,4 @@ type UserRepository interface {
 	FetchAllUsers(ctx context.Context) ([]entities.User, error)
 	EmailAlreadyExists(ctx context.Context, email string) bool
 	FetchUserByUsername(ctx context.Context, username string) (*entities.User, error)
-	//AddLoss(userId primitive.ObjectID) error
-	//AddWin(userId primitive.ObjectID) error
-	//GetAllUsers() ([]entities.User, error)
-	//GetUserByEmail(email string) (*entities.User, error)
-	//GetUserById(userId primitive.ObjectID) (*entities.User, error)
-	//GetPendingInvites(email string) ([]primitive.ObjectID, error)
-	//DeleteInvite(slotId primitive.ObjectID) error
-	//AddToInvites(userId primitive.ObjectID, slotId primitive.ObjectID) error
-	//GetAllUsersByScore() ([]entities.User, error)
 }
