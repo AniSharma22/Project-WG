@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"context"
 	"fmt"
 	"project2/pkg/globals"
 )
@@ -8,18 +9,17 @@ import (
 func (ui *UI) ViewProfile() {
 	fmt.Println("👤  Your Profile  👤")
 
-	user, err := ui.userService.GetUserByEmail(globals.ActiveUser)
+	user, err := ui.userService.GetUserByID(context.Background(), globals.ActiveUser)
 	if err != nil {
 		fmt.Println("⚠️ Error fetching profile:", err)
 		return
 	}
 
 	fmt.Println("------------------------------------------------")
+	fmt.Printf("📧  Name:        %s\n", user.Username)
 	fmt.Printf("📧  Email:        %s\n", user.Email)
 	fmt.Printf("🚻  Gender:       %v\n", user.Gender)
-	fmt.Printf("📱  Phone Number: %v\n", user.PhoneNo)
+	fmt.Printf("📱  Phone Number: %v\n", user.MobileNumber)
 	fmt.Printf("🎭  Role:         %s\n", user.Role)
-	fmt.Printf("🎮  Games Played: %d\n", user.Wins+user.Losses)
-	fmt.Printf("💯  Score:        %.2f\n", user.OverallScore)
 	fmt.Println("------------------------------------------------")
 }

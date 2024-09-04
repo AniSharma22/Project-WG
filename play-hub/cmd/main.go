@@ -3,9 +3,8 @@ package main
 import (
 	"bufio"
 	"context"
+	"database/sql"
 	"fmt"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"os"
 	"os/signal"
@@ -13,87 +12,78 @@ import (
 	"project2/internal/app/services"
 	"project2/internal/config"
 	"project2/internal/ui"
-	"project2/pkg/globals"
 	"project2/pkg/utils"
-	"sync"
 	"syscall"
-	"time"
 )
 
-// Declare a variable to hold the singleton instance of the MongoDB client
-var (
-	clientInstance *mongo.Client
-	clientOnce     sync.Once
-)
+// InitClient initializes a PostgresSQL client
+func InitClient() (*sql.DB, error) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		config.Host, config.Port, config.User, config.Password, config.Dbname)
 
-// InitClient initializes a MongoDB client with a connection pool of 30
-func InitClient(uri string) (*mongo.Client, error) {
-	var err error
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
+	}
+	// Check the connection
+	err = db.Ping()
+	if err != nil {
+		log.Fatalf("Failed to ping PostgreSQL: %v", err)
+	}
 
-	clientOnce.Do(func() {
-		clientOptions := options.Client().ApplyURI(uri)
-		clientOptions.SetMaxPoolSize(30) // Set the maximum number of connections in the pool
-
-		clientInstance, err = mongo.Connect(context.Background(), clientOptions)
-		if err != nil {
-			log.Fatalf("Failed to connect to MongoDB: %v", err)
-		}
-
-		globals.IstLocation, err = time.LoadLocation("Asia/Kolkata")
-		if err != nil {
-			log.Fatalf("Failed to load location: %v", err)
-		}
-	})
-
-	return clientInstance, err
+	return db, err
 }
 
 func main() {
-	client, err := InitClient(config.DB.DBURI)
+
+	// Initialize PostgresSQL client
+	client, err := InitClient()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error initializing PostgresSQL client:", err)
 	}
 	defer func() {
-		if err := client.Disconnect(context.Background()); err != nil {
-			log.Fatal(err)
+		if err := client.Close(); err != nil {
+			log.Fatal("Error closing PostgresSQL client:", err)
 		}
 	}()
 
-	// Initialize all repositories with the MongoDB client
+	// Initialize repositories
 	userRepo := repositories.NewUserRepo(client)
 	gameRepo := repositories.NewGameRepo(client)
 	slotRepo := repositories.NewSlotRepo(client)
-	gameHistoryRepo := repositories.NewGameHistoryRepo(client)
+	invitationRepo := repositories.NewInvitationRepo(client)
+	bookingRepo := repositories.NewBookingRepo(client)
 	leaderboardRepo := repositories.NewLeaderboardRepo(client)
 	notificationRepo := repositories.NewNotificationRepo(client)
 
-	// Initialize all services
+	// Initialize services
 	gameService := services.NewGameService(gameRepo)
-	slotService := services.NewSlotService(slotRepo, userRepo, gameHistoryRepo)
-	userService := services.NewUserService(userRepo, slotService, gameService)
-	gameHistoryService := services.NewGameHistoryService(gameHistoryRepo, userService, slotService)
-	leaderboardService := services.NewLeaderboardService(leaderboardRepo, userService)
+	slotService := services.NewSlotService(slotRepo)
+	userService := services.NewUserService(userRepo)
+	bookingService := services.NewBookingService(bookingRepo, slotService, gameService)
+	invitationService := services.NewInvitationService(invitationRepo, bookingService, slotService)
+	leaderboardService := services.NewLeaderboardService(leaderboardRepo, bookingService)
 	notificationService := services.NewNotificationService(notificationRepo)
 
 	// Insert today's slots
-	err = utils.InsertAllSlots(slotRepo, gameRepo)
+	err = utils.InsertAllSlots(context.Background(), slotRepo, gameRepo)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error inserting slots:", err)
 	}
 
-	// Handling graceful shutdown
+	// Graceful shutdown handling
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		<-sigChan
 		fmt.Println("Graceful shutdown initiated...")
-		// Wait for all operations to complete if necessary
+		// Additional cleanup if necessary
 		fmt.Println("All operations completed. Exiting.")
 		os.Exit(0)
 	}()
 
-	// Set up the UI with all services
-	appUI := ui.NewUI(userService, gameService, slotService, gameHistoryService, leaderboardService, notificationService, bufio.NewReader(os.Stdin))
+	// Initialize and display the UI
+	appUI := ui.NewUI(userService, gameService, slotService, bookingService, invitationService, leaderboardService, notificationService, bufio.NewReader(os.Stdin))
 	appUI.ShowMainMenu()
 }

@@ -20,7 +20,7 @@ func (ui *UI) ShowMainMenu() {
 		// Display the menu options
 		fmt.Println("🚪  1. Signup")
 		fmt.Println("🔐  2. Login")
-		fmt.Println("🚶‍️3. Exit")
+		fmt.Println("🚶️ 3. Exit")
 		fmt.Println("\n🔽  Please choose an option:")
 
 		// Prompt the user for input

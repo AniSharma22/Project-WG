@@ -2,53 +2,91 @@ package repositories
 
 import (
 	"context"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"project2/internal/config"
+	"database/sql"
+	"errors"
+	"fmt"
+	"github.com/google/uuid"
 	"project2/internal/domain/entities"
-	"project2/internal/domain/interfaces"
+	interfaces "project2/internal/domain/interfaces/repository"
 )
 
 type notificationRepo struct {
-	collection *mongo.Collection
+	db *sql.DB
 }
 
-func NewNotificationRepo(client *mongo.Client) interfaces.NotificationRepository {
-	return &notificationRepo{
-		collection: client.Database(config.DB.DBName).Collection(config.DB.NotificationsCollection),
-	}
+func NewNotificationRepo(db *sql.DB) interfaces.NotificationRepository {
+	return &notificationRepo{db: db}
 }
 
-// AddNotification adds a new notification to the database.
-func (r *notificationRepo) AddNotification(notification *entities.Notification) error {
-	_, err := r.collection.InsertOne(context.Background(), notification)
-	return err
-}
-
-// GetNotifications retrieves notifications for a specific user.
-func (r *notificationRepo) GetNotifications(userId primitive.ObjectID) ([]entities.Notification, error) {
-	filter := bson.M{"userId": userId}
-	opts := options.Find().SetSort(bson.D{{"createdAt", -1}}) // Sort by creation date in descending order
-
-	cursor, err := r.collection.Find(context.Background(), filter, opts)
+// CreateNotification inserts a new notification into the database and returns the created notification ID.
+func (r *notificationRepo) CreateNotification(ctx context.Context, notification *entities.Notification) (uuid.UUID, error) {
+	query := `INSERT INTO notifications (user_id, message, is_read) VALUES ($1, $2, $3) RETURNING notification_id`
+	var id uuid.UUID
+	err := r.db.QueryRowContext(ctx, query, notification.UserID, notification.Message, notification.IsRead).Scan(&id)
 	if err != nil {
-		return nil, err
+		return uuid.Nil, fmt.Errorf("failed to create notification: %w", err)
 	}
-	defer cursor.Close(context.Background())
+	return id, nil
+}
+
+// FetchNotificationByID retrieves a notification by its ID.
+func (r *notificationRepo) FetchNotificationByID(ctx context.Context, id uuid.UUID) (*entities.Notification, error) {
+	query := `SELECT notification_id, user_id, message, is_read, created_at FROM notifications WHERE notification_id = $1`
+	row := r.db.QueryRowContext(ctx, query, id)
+
+	var notification entities.Notification
+	err := row.Scan(&notification.NotificationID, &notification.UserID, &notification.Message, &notification.IsRead, &notification.CreatedAt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil // No notification found
+		}
+		return nil, fmt.Errorf("failed to fetch notification by ID: %w", err)
+	}
+
+	return &notification, nil
+}
+
+// FetchUserNotifications retrieves all notifications for a specific user.
+func (r *notificationRepo) FetchUserNotifications(ctx context.Context, userID uuid.UUID) ([]entities.Notification, error) {
+	query := `SELECT notification_id, user_id, message, is_read, created_at FROM notifications WHERE user_id = $1 ORDER BY created_at DESC`
+	rows, err := r.db.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch user notifications: %w", err)
+	}
+	defer rows.Close()
 
 	var notifications []entities.Notification
-	if err := cursor.All(context.Background(), &notifications); err != nil {
-		return nil, err
+	for rows.Next() {
+		var notification entities.Notification
+		if err := rows.Scan(&notification.NotificationID, &notification.UserID, &notification.Message, &notification.IsRead, &notification.CreatedAt); err != nil {
+			return nil, fmt.Errorf("failed to scan notification row: %w", err)
+		}
+		notifications = append(notifications, notification)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error occurred while iterating over notifications: %w", err)
 	}
 
 	return notifications, nil
 }
 
-// DeleteNotification deletes a notification by its ID.
-func (r *notificationRepo) DeleteNotification(notificationId primitive.ObjectID) error {
-	filter := bson.M{"_id": notificationId}
-	_, err := r.collection.DeleteOne(context.Background(), filter)
-	return err
+// MarkNotificationAsRead marks a notification as read by updating its is_read status.
+func (r *notificationRepo) MarkNotificationAsRead(ctx context.Context, id uuid.UUID) error {
+	query := `UPDATE notifications SET is_read = TRUE WHERE notification_id = $1`
+	_, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("failed to mark notification as read: %w", err)
+	}
+	return nil
+}
+
+// DeleteNotificationByID deletes a notification from the database by its ID.
+func (r *notificationRepo) DeleteNotificationByID(ctx context.Context, id uuid.UUID) error {
+	query := `DELETE FROM notifications WHERE notification_id = $1`
+	_, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete notification: %w", err)
+	}
+	return nil
 }

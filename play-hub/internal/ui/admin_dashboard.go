@@ -1,9 +1,9 @@
-//go:build ignore
-
 package ui
 
 import (
+	"context"
 	"fmt"
+	"project2/internal/domain/entities"
 	"strings"
 )
 
@@ -46,6 +46,8 @@ func (ui *UI) ShowAdminDashboard() {
 func (ui *UI) CreateGame() {
 	var gameName string
 	var maxPlayers int
+	var minPlayers int
+	var instances int
 
 	fmt.Println("\033[1;34m") // Blue bold
 	fmt.Println("\n🎮 Create a New Game")
@@ -80,7 +82,43 @@ func (ui *UI) CreateGame() {
 		}
 	}
 
-	err := ui.gameService.CreateGame(gameName, maxPlayers)
+	// Get minimum number of players
+	for {
+		fmt.Print("Enter the minimum number of players: ")
+		input, _ := ui.reader.ReadString('\n')
+		input = strings.TrimSpace(input)
+		_, err := fmt.Sscanf(input, "%d", &minPlayers)
+		if err != nil || minPlayers <= 0 {
+			fmt.Println("\033[1;31m") // Red bold
+			fmt.Println("❌ Invalid number of players. Please enter a positive integer.")
+			fmt.Println("\033[0m") // Reset color
+		} else {
+			break
+		}
+	}
+
+	// Get instances of game available
+	for {
+		fmt.Print("Enter the number of instances: ")
+		input, _ := ui.reader.ReadString('\n')
+		input = strings.TrimSpace(input)
+		_, err := fmt.Sscanf(input, "%d", &instances)
+		if err != nil || instances <= 0 {
+			fmt.Println("\033[1;31m") // Red bold
+			fmt.Println("❌ Invalid number of players. Please enter a positive integer.")
+			fmt.Println("\033[0m") // Reset color
+		} else {
+			break
+		}
+	}
+
+	newGame := &entities.Game{
+		GameName:   gameName,
+		MaxPlayers: maxPlayers,
+		MinPlayers: minPlayers,
+		Instances:  instances,
+	}
+	_, err := ui.gameService.CreateGame(context.Background(), newGame)
 	if err != nil {
 		fmt.Printf("\033[1;31m❌ Error creating game: %v\033[0m\n", err)
 		return
@@ -97,7 +135,7 @@ func (ui *UI) DeleteGame() {
 	fmt.Println("\033[0m") // Reset color
 
 	// Fetch all games
-	games, err := ui.gameService.GetAllGames()
+	games, err := ui.gameService.GetAllGames(context.Background())
 	if err != nil {
 		fmt.Printf("\033[1;31m❌ Error retrieving games: %v\033[0m\n", err)
 		return
@@ -112,7 +150,7 @@ func (ui *UI) DeleteGame() {
 	// Display the list of games
 	fmt.Println("\033[1;34mAvailable games:\033[0m")
 	for i, game := range games {
-		fmt.Printf("%d. %s (Max Players: %d)\n", i+1, game.Name, game.MaxCapacity)
+		fmt.Printf("%d. %s (Max Players: %d)\n", i+1, game.GameName, game.MaxPlayers)
 	}
 
 	// Ask the user to choose a game to delete
@@ -131,7 +169,7 @@ func (ui *UI) DeleteGame() {
 
 	// Get the selected game ID and delete the game
 	selectedGame := games[choice-1]
-	err = ui.gameService.DeleteGame(selectedGame.ID)
+	err = ui.gameService.DeleteGame(context.Background(), selectedGame.GameID)
 	if err != nil {
 		fmt.Printf("\033[1;31m❌ Error deleting game: %v\033[0m\n", err)
 		return
@@ -163,7 +201,7 @@ func (ui *UI) ViewUserStats() {
 	}
 
 	// Retrieve user by email
-	user, err := ui.userService.GetUserByEmail(email)
+	user, err := ui.userService.GetUserByEmail(context.Background(), email)
 	if err != nil {
 		fmt.Printf("\033[1;31m❌ Error retrieving user stats: %v\033[0m\n", err)
 		return
@@ -173,8 +211,6 @@ func (ui *UI) ViewUserStats() {
 	fmt.Println("\033[1;32mUser Stats\033[0m")
 	fmt.Printf("📧 Email: %s\n", user.Email)
 	fmt.Printf("👤 Gender: %v\n", user.Gender)
-	fmt.Printf("📞 Phone Number: %v\n", user.PhoneNo)
+	fmt.Printf("📞 Phone Number: %v\n", user.MobileNumber)
 	fmt.Printf("🎖️ Role: %s\n", user.Role)
-	fmt.Printf("🎮 Games Played: %d\n", user.Wins+user.Losses)
-	fmt.Printf("🏆 Score: %.2f\n", user.OverallScore)
 }

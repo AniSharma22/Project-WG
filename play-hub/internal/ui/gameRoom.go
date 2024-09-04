@@ -1,12 +1,13 @@
 package ui
 
 import (
+	"context"
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 	"os"
 	"project2/internal/domain/entities"
-	"project2/pkg/utils"
+	"project2/pkg/globals"
 	"strconv"
 	"strings"
 	"time"
@@ -14,7 +15,7 @@ import (
 
 func (ui *UI) ShowGameRoom() {
 	// Retrieve all games from the game service
-	games, err := ui.gameService.GetAllGames()
+	games, err := ui.gameService.GetAllGames(context.Background())
 	if err != nil {
 		fmt.Println("❌ Error fetching games:", err)
 		return
@@ -23,7 +24,7 @@ func (ui *UI) ShowGameRoom() {
 	// Display the list of games to the user
 	fmt.Println("🎮 Available Games:")
 	for i, game := range games {
-		fmt.Printf("%d. %s\n", i+1, game.Name)
+		fmt.Printf("%d. %s\n", i+1, game.GameName)
 	}
 	// Add an option to go back
 	fmt.Printf("%d. 🔙 Go Back\n", len(games)+1)
@@ -64,10 +65,10 @@ func (ui *UI) ShowGameRoom() {
 
 // HandleSelectedGame displays all slots for the selected game and handles the user's selection.
 func (ui *UI) HandleSelectedGame(game *entities.Game) {
-	fmt.Printf("✔️ You selected: %s\n", game.Name)
+	fmt.Printf("✔️ You selected: %s\n", game.GameName)
 
 	// Retrieve all slots for the selected game
-	slots, err := ui.slotService.GetGameSlots(game)
+	slots, err := ui.slotService.GetCurrentDayGameSlots(context.Background(), game.GameID)
 	if err != nil {
 		fmt.Println("❌ Error fetching slots:", err)
 		return
@@ -131,40 +132,36 @@ func (ui *UI) HandleSelectedGame(game *entities.Game) {
 
 // HandleSelectedSlot processes the selected game and slot entities.
 func (ui *UI) HandleSelectedSlot(game *entities.Game, slot *entities.Slot) {
+	bookedUsers, _ := ui.bookingService.GetSlotBookedUsers(context.Background(), slot.SlotID)
 	// Display the selected slot's time and game name
 	fmt.Printf("\n📅 Slot Details:\n")
-	fmt.Printf("🎮 Game: %s\n", game.Name)
+	fmt.Printf("🎮 Game: %s\n", game.GameName)
 	fmt.Printf("⏰ Slot Time: %s to %s\n", slot.StartTime.Format("03:04 PM"), slot.EndTime.Format("03:04 PM"))
 
 	// Display booked users
-	if len(slot.BookedUsers) == 0 {
+	if len(bookedUsers) == 0 {
 		fmt.Println("🚫 Booked Users: None")
 	} else {
 		fmt.Println("👥 Booked Users:")
-		for _, userID := range slot.BookedUsers {
-			user, err := ui.userService.GetUserById(userID)
-			if err != nil {
-				fmt.Printf("- ❌ Error fetching user ID %s: %v\n", userID.Hex(), err)
-			} else {
-				fmt.Printf("- %s (User ID: %s)\n", utils.GetNameFromEmail(user.Email), userID.Hex())
-			}
+		for _, userName := range bookedUsers {
+			fmt.Printf("- %s\n", userName)
 		}
 	}
 
 	// Display results (winners and losers)
-	if len(slot.Results) == 0 {
-		fmt.Println("⚖️ Results: No results recorded for this slot yet.")
-	} else {
-		fmt.Println("🏅 Results:")
-		for _, result := range slot.Results {
-			user, _ := ui.userService.GetUserById(result.UserID)
-			if result.Result == "win" {
-				fmt.Printf("- 🏆 %s (User ID: %s) winner\n", utils.GetNameFromEmail(user.Email), result.UserID)
-			} else {
-				fmt.Printf("-   %s (User ID: %s) loser\n", utils.GetNameFromEmail(user.Email), result.UserID)
-			}
-		}
-	}
+	//if len(slot.Results) == 0 {
+	//	fmt.Println("⚖️ Results: No results recorded for this slot yet.")
+	//} else {
+	//	fmt.Println("🏅 Results:")
+	//	for _, result := range slot.Results {
+	//		user, _ := ui.userService.GetUserById(result.UserID)
+	//		if result.Result == "win" {
+	//			fmt.Printf("- 🏆 %s (User ID: %s) winner\n", utils.GetNameFromEmail(user.Email), result.UserID)
+	//		} else {
+	//			fmt.Printf("-   %s (User ID: %s) loser\n", utils.GetNameFromEmail(user.Email), result.UserID)
+	//		}
+	//	}
+	//}
 
 	// Show options to the user
 	fmt.Println("\n🔧 Options:")
@@ -197,7 +194,7 @@ func (ui *UI) HandleSelectedSlot(game *entities.Game, slot *entities.Slot) {
 	// Process user choice
 	switch choice {
 	case 1:
-		err := ui.slotService.BookSlot(game, slot)
+		err := ui.bookingService.MakeBooking(context.Background(), globals.ActiveUser, slot.SlotID)
 		if err != nil {
 			fmt.Println("❌", err)
 			return
@@ -215,14 +212,14 @@ func (ui *UI) HandleSelectedSlot(game *entities.Game, slot *entities.Slot) {
 		email = strings.TrimSpace(email)
 
 		// Assuming you have a method to find the user by email
-		user, err := ui.userService.GetUserByEmail(email)
+		user, err := ui.userService.GetUserByEmail(context.Background(), email)
 		if err != nil {
 			fmt.Println("❌ User not found or error retrieving user:", err)
 			return
 		}
 
 		// Now pass the game, slot, and user ID to the InviteToSlot method
-		err = ui.slotService.InviteToSlot(user.ID, game, slot)
+		_, err = ui.invitationService.MakeInvitation(context.Background(), globals.ActiveUser, user.UserID, slot.SlotID)
 		if err != nil {
 			fmt.Println("❌ Error inviting user to slot:", err)
 			return

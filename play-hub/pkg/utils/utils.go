@@ -2,13 +2,13 @@ package utils
 
 import (
 	"bytes"
+	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"math"
 	"project2/internal/domain/entities"
-	"project2/internal/domain/interfaces"
+	repository_interfaces "project2/internal/domain/interfaces/repository"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetTotalScore(totalWins, totalLosses int) float32 {
@@ -42,11 +42,11 @@ func GetNameFromEmail(email string) string {
 	return name.String()
 }
 
-func InsertAllSlots(slotRepo interfaces.SlotRepository, gameRepo interfaces.GameRepository) error {
+func InsertAllSlots(ctx context.Context, slotRepo repository_interfaces.SlotRepository, gameRepo repository_interfaces.GameRepository) error {
 	today := time.Now().Truncate(24 * time.Hour)
 
 	// Fetch all games
-	games, err := gameRepo.GetAllGames()
+	games, err := gameRepo.FetchAllGames(ctx)
 	if err != nil {
 		return fmt.Errorf("error fetching games: %w", err)
 	}
@@ -57,9 +57,9 @@ func InsertAllSlots(slotRepo interfaces.SlotRepository, gameRepo interfaces.Game
 
 	for _, game := range games {
 		// Check for existing slots for this game on today's date
-		existingSlots, err := slotRepo.GetSlotsByDate(today, game.ID)
+		existingSlots, err := slotRepo.FetchSlotsByGameIDAndDate(ctx, game.GameID, today)
 		if err != nil {
-			return fmt.Errorf("error checking existing slots for game %s: %w", game.Name, err)
+			return fmt.Errorf("error checking existing slots for game %s: %w", game.GameName, err)
 		}
 
 		// If no slots exist, create new slots
@@ -70,23 +70,28 @@ func InsertAllSlots(slotRepo interfaces.SlotRepository, gameRepo interfaces.Game
 					slotEndTime = endTime
 				}
 
-				newSlot := entities.Slot{
-					ID:          primitive.NewObjectID(),
-					GameID:      game.ID,
-					Date:        time.Now().Truncate(24 * time.Hour),
-					StartTime:   current,
-					EndTime:     slotEndTime,
-					BookedUsers: []primitive.ObjectID{},
-					Results:     []entities.Result{},
+				newSlot := &entities.Slot{
+					SlotID:    uuid.New(),
+					GameID:    game.GameID,
+					Date:      today,
+					StartTime: current,
+					EndTime:   slotEndTime,
+					IsBooked:  false,
 				}
 
 				// Insert the new slot
-				if _, err := slotRepo.InsertSlot(newSlot); err != nil {
-					return fmt.Errorf("error inserting slot for game %s: %w", game.Name, err)
+				if _, err := slotRepo.CreateSlot(ctx, newSlot); err != nil {
+					return fmt.Errorf("error inserting slot for game %s: %w", game.GameName, err)
 				}
 			}
 		}
 	}
 
 	return nil
+}
+
+// Helper function to parse time strings into time.Time
+
+func ParseSlotTime(timeStr string) (time.Time, error) {
+	return time.Parse("15:04", timeStr)
 }

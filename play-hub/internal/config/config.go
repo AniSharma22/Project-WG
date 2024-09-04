@@ -14,6 +14,14 @@ type DBConfig struct {
 	// Add other collections here
 }
 
+const (
+	Host     = "localhost"
+	Port     = 5432
+	User     = "postgres"
+	Password = "password"
+	Dbname   = "play-hub"
+)
+
 var DB = DBConfig{
 	DBURI:                   "mongodb://localhost:27017",
 	DBName:                  "play-hub",

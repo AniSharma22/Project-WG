@@ -1,7 +1,9 @@
 package ui
 
 import (
+	"context"
 	"fmt"
+	"project2/pkg/globals"
 	"strconv"
 	"strings"
 )
@@ -10,7 +12,7 @@ func (ui *UI) ViewPendingInvites() {
 	fmt.Println("📬  Pending Invites  📬")
 
 	// Retrieve pending invites for the active user
-	invites, err := ui.userService.GetPendingInvites()
+	invites, err := ui.invitationService.GetAllPendingInvitations(context.Background(), globals.ActiveUser)
 	if err != nil {
 		fmt.Println("⚠️ Error retrieving pending invites:", err)
 		return
@@ -58,14 +60,14 @@ func (ui *UI) ViewPendingInvites() {
 
 	switch input {
 	case "a":
-		err := ui.userService.AcceptInvite(selectedInvite.SlotId)
+		err := ui.invitationService.AcceptInvitation(context.Background(), selectedInvite.InvitationId)
 		if err != nil {
 			fmt.Printf("❌ Error accepting invite #%d: %v\n", choice, err)
 		} else {
 			fmt.Printf("✅ Invite #%d accepted\n", choice)
 		}
 	case "r":
-		err := ui.userService.RejectInvite(selectedInvite.SlotId)
+		err := ui.invitationService.RejectInvitation(context.Background(), selectedInvite.InvitationId)
 		if err != nil {
 			fmt.Printf("❌ Error rejecting invite #%d: %v\n", choice, err)
 		} else {
