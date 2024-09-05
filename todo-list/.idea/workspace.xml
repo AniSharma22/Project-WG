@@ -4,14 +4,61 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="483178ca-f89f-4d23-bd9f-2476a1e17394" name="Changes" comment="" />
+    <list default="true" id="483178ca-f89f-4d23-bd9f-2476a1e17394" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../play-hub/scripts/create_tables.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_booking_repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_invitation_repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_notification_repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_booking_service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_invitation_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/internal/app/services/booking_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/app/services/booking_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/internal/app/services/game_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/app/services/game_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/internal/app/services/slot_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/app/services/slot_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/internal/app/services/user_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/app/services/user_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/internal/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/game_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/game_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/leaderboard_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/leaderboard_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/notificaiton_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/notification_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/slot_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/slot_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/user_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/internal/domain/interfaces/repository/user_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_game_history_repository.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_game_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_game_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_leaderboard_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_leaderboard_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_slot_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_slot_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_user_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/repository/mock_user_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_game_history_service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_game_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_game_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_leaderboard_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_leaderboard_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_notification_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_notification_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_slot_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_slot_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_user_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/mocks/service/mock_user_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/service/game_history_service_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/service/game_service_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/service/game_service_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/service/leaderboard_service_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/service/leaderboard_service_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/service/setup_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/service/setup_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/service/slot_service_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/service/slot_service_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../play-hub/tests/service/user_service_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/../play-hub/tests/service/user_service_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/todo-list.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/todo-list.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/json/progress.json" beforeDir="false" afterPath="$PROJECT_DIR$/json/progress.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/json/todos.json" beforeDir="false" afterPath="$PROJECT_DIR$/json/todos.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/json/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/json/users.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../../../Program Files/Go" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -23,16 +70,36 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Go Build.go build project/cmd.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
     "git-widget-placeholder": "master",
     "go.import.settings.migrated": "true",
-    "last_opened_file_path": "C:/Users/Dell/projects2/watchguard-proj/Project-WG/play-hub",
+    "go.sdk.automatically.set": "true",
+    "last_opened_file_path": "C:/Users/Dell/projects2/watchguard-proj/Project-WG/todo-list",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
     "nodejs_package_manager_path": "npm"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="go build project/cmd" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="todo-list" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="project/cmd" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/cmd/main.go" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build project/cmd" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

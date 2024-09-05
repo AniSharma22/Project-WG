@@ -12,8 +12,4 @@ type GameRepository interface {
 	CreateGame(ctx context.Context, game *entities.Game) (uuid.UUID, error)
 	DeleteGame(ctx context.Context, id uuid.UUID) error
 	UpdateGameStatus(ctx context.Context, gameID uuid.UUID, status bool) error
-	//GetGameByID(gameId primitive.ObjectID) (*entities.Game, error)
-	//GetAllGames() ([]entities.Game, error)
-	//CreateGame(game *entities.Game) error
-	//DeleteGame(gameId primitive.ObjectID) error
 }

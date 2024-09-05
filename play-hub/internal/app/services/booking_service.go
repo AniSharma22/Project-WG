@@ -25,6 +25,7 @@ func NewBookingService(bookRepo repository_interfaces.BookingRepository, slotSer
 	}
 }
 
+// MakeBooking creates a new booking
 func (b *BookingService) MakeBooking(ctx context.Context, userID uuid.UUID, slotID uuid.UUID) error {
 	// Fetch the slot to check its current status
 	slot, err := b.SlotService.GetSlotByID(ctx, slotID)
@@ -81,18 +82,22 @@ func (b *BookingService) GetUpcomingBookings(ctx context.Context, userID uuid.UU
 	return b.bookRepo.FetchUpcomingBookingsByUserID(ctx, userID)
 }
 
+// GetBookingsToUpdateResult retrieves all bookings which have pending result update
 func (b *BookingService) GetBookingsToUpdateResult(ctx context.Context, userID uuid.UUID) ([]models.Bookings, error) {
 	return b.bookRepo.FetchBookingsToUpdateResult(ctx, userID)
 }
 
+// UpdateBookingResult updates the result of a particular booking with either win or loss
 func (b *BookingService) UpdateBookingResult(ctx context.Context, bookingId uuid.UUID, result string) error {
 	return b.bookRepo.UpdateBookingResult(ctx, bookingId, result)
 }
 
+// GetSlotBookedUsers retrieves and returns the list of all the booked users of a slot
 func (b *BookingService) GetSlotBookedUsers(ctx context.Context, slotId uuid.UUID) ([]string, error) {
 	return b.bookRepo.FetchSlotBookedUsers(ctx, slotId)
 }
 
+// GetBookingByUserAndSlotID retrieves the slot based on the user and slot ID
 func (b *BookingService) GetBookingByUserAndSlotID(ctx context.Context, userID uuid.UUID, slotID uuid.UUID) (models.Bookings, error) {
 	return b.bookRepo.FetchBookingBySlotAndUserId(ctx, slotID, userID)
 }

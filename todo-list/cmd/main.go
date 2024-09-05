@@ -33,7 +33,6 @@ func init() {
 
 	// Start loading the course outline
 	go utils.LoadCourseOutline(config.CoursesFile)
-
 }
 
 func main() {
@@ -47,8 +46,15 @@ func main() {
 		vars := mux.Vars(r)
 		username := vars["username"]
 		w.Header().Add("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(utils.GetUserTodos(username))
-		return
+		todos, exists := utils.TodosMap[username]
+		if !exists {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		err := json.NewEncoder(w).Encode(todos)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}).Methods("GET")
 
 	// 2. To add a new user todos
